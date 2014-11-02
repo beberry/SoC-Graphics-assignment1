@@ -19,14 +19,10 @@ private:
 
 	GLuint bufferObject, normalsBufferObject, sphereNormals, elementBuffer;
 
-	int vertexPositionsSize;
-	int vertexColoursSize;
-
-	void WindmillBase::generateVertices();
+	int drawmode;
+	GLuint vertexCount;
 
 	// Only for this object.
-	int baseVertices;		// what shape is for the windmill.
-
 	GLfloat numlats;
 	GLfloat numlongs;
 
@@ -35,8 +31,6 @@ private:
 	GLfloat topRadiusCoeff; // used to multiply the bottom radius with this coeff, to get the top radius.
 
 	
-
-
 public:
 	// Common for graphics objects.
 	WindmillBase(GLfloat height);
@@ -45,12 +39,10 @@ public:
 	GLfloat* WindmillBase::getVertexPositions();
 	GLfloat* WindmillBase::getVerteColours();
 
-	int WindmillBase::getVertexPositionsSize();
-	int WindmillBase::getVertexColoursSize();
-
 	GLuint makeVBO(GLfloat numlats, GLfloat numlongs);
 	void makeUnitObject(GLfloat *pVertices, GLuint numlats, GLuint numlongs);
 	void draw();
+	void setDrawmode(int drawmode);
 
 
 	GLfloat angle_x, angle_y, angle_z, angle_inc_x, angle_inc_y, angle_inc_z;

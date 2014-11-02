@@ -6,10 +6,11 @@
 /* Construction */
 WindmillBase::WindmillBase(GLfloat height)
 {
-	this->baseVertices	 = 50;
 	this->topRadiusCoeff = 0.7;
 	this->height		 = 2;
 	this->bottomRadius	 = 2;
+	this->drawmode	     = 3;
+	this->vertexCount    = 0;
 }
 
 /* Destructor */
@@ -26,20 +27,21 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 	this->numlongs = numlongs;
 
 	/* Calculate the number of vertices required in hemisphere */
-	GLuint numvertices = (numlats) * (numlongs);
-	GLfloat* pVertices = new GLfloat[numvertices * 3];
-	GLfloat* pColours = new GLfloat[numvertices * 4];
+	this->vertexCount = (numlats) * (numlongs);
+
+	GLfloat* pVertices = new GLfloat[this->vertexCount * 3];
+	GLfloat* pColours = new GLfloat[this->vertexCount * 4];
 
 	makeUnitObject(pVertices, numlats, numlongs);
 
 
-	glm::vec3* pNormals = new glm::vec3[numvertices];
-	GLfloat* normalsDivisors = new GLfloat[numvertices];
+	glm::vec3* pNormals = new glm::vec3[this->vertexCount];
+	GLfloat* normalsDivisors = new GLfloat[this->vertexCount];
 
 
 
 	// init arr
-	for (int i = 0; i < numvertices; i++)
+	for (int i = 0; i < this->vertexCount; i++)
 	{
 		pNormals[i] = glm::vec3(0.0, 0.0, 0.0);
 	}
@@ -117,24 +119,10 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 
 
 				// Set the normals
-
 				pNormals[p0Index] += crossP;
 				pNormals[p1Index] += crossP;
 				pNormals[p2Index] += crossP;
 				
-				/*if (lon == (numlongs-1))
-				{
-					// Last calculation in this strip., wrap the strip around and add the normals to the beginning of the strip.
-					pNormals[ind - lat*((int)numlongs + 1)] += crossP;
-					pNormals[ind + 1] += crossP;
-				}
-				else if (lon == (numlongs - 2))
-				{
-					// Last calculation in this strip., wrap the strip around and add the normals to the beginning of the strip.
-					pNormals[ind - lat*((int)numlongs + 1)] += crossP;
-
-				}
-				*/
 
 				if (ind % (lon + 1) == 0)
 				{
@@ -157,7 +145,7 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 	}
 	
 	// Normalize the normals
-	for (int i = 0; i < numvertices; i++)
+	for (int i = 0; i < this->vertexCount; i++)
 	{
 		pNormals[i] = glm::normalize(pNormals[i]);
 		std::cout << "x" << pNormals[i].x << " y" << pNormals[i].y << " z" << pNormals[i].z << std::endl;
@@ -165,7 +153,7 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 
 
 	/* Define colours as the x,y,z components of the sphere vertices */
-	for (i = 0; i < numvertices; i++)
+	for (i = 0; i < this->vertexCount; i++)
 	{
 		pColours[i * 4] = pVertices[i * 3];
 		pColours[i * 4 + 1] = pVertices[i * 3 + 1];
@@ -176,13 +164,13 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 	/* Generate the vertex buffer object */
 	glGenBuffers(1, &this->bufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, this->bufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * numvertices * 3, pVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->vertexCount * 3, pVertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	/* Store the normals in a buffer object */
 	glGenBuffers(1, &this->sphereNormals);
 	glBindBuffer(GL_ARRAY_BUFFER, this->sphereNormals);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*numvertices, pNormals, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*this->vertexCount, pNormals, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
@@ -228,7 +216,7 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 	delete pColours;
 	delete pVertices;
 
-	return numvertices;
+	return this->vertexCount;
 }
 
 void WindmillBase::makeUnitObject(GLfloat *pVertices, GLuint numlats, GLuint numlongs)
@@ -247,11 +235,11 @@ void WindmillBase::makeUnitObject(GLfloat *pVertices, GLuint numlats, GLuint num
 			this->bottomRadius = this->bottomRadius*this->topRadiusCoeff;
 		}
 
-		int p= 0;
 		/* Define vertices along latitude lines */
+		int p = 0;
+
 		for (GLfloat lon = -180.f; lon < 180.f, p < numlongs; lon += longstep)
 		{
-			p++;
 			lon_radians = (lon)* DEG_TO_RADIANS;
 
 			x = cos(lon_radians)*this->bottomRadius;
@@ -261,9 +249,9 @@ void WindmillBase::makeUnitObject(GLfloat *pVertices, GLuint numlats, GLuint num
 
 			/* Define the vertex */
 			pVertices[vnum * 3] = x; pVertices[vnum * 3 + 1] = y; pVertices[vnum * 3 + 2] = z;
-			vnum++;
-
 			
+			vnum++;
+			p++;
 		}
 	}
 }
@@ -290,17 +278,21 @@ void WindmillBase::draw()
 	glPointSize(3.f);
 
 	// Enable this line to show model in wireframe
-	//if (drawmode == 1)
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//else
+	if (this->drawmode == 1)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else
+	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 
-	//if (drawmode == 2)
-	//{
-	//	glDrawArrays(GL_POINTS, 0, numspherevertices);
-	//}
-	//else
-	//{
+	if (this->drawmode == 2)
+	{
+		glDrawArrays(GL_POINTS, 0, this->vertexCount);
+	}
+	else
+	{
 		/* Draw the latitude triangle strips */
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
 
@@ -310,15 +302,12 @@ void WindmillBase::draw()
 		{
 			glDrawElements(GL_TRIANGLE_STRIP, this->numlongs * 2 + 2, GL_UNSIGNED_INT, (GLvoid*)(lat_offset*i));
 		}
-	//}
+	}
 }
 
-GLfloat* WindmillBase::getVertexPositions()
+void WindmillBase::setDrawmode(int drawmode)
 {
-	return this->vertexPositions;
+	this->drawmode = drawmode;
 }
 
-GLfloat* WindmillBase::getVerteColours()
-{
-	return this->vertexColours;
-}
+

@@ -248,6 +248,8 @@ void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	{
 		drawmode++;
 		if (drawmode > 2) drawmode = 0;
+
+		wmbom->setDrawmode(drawmode);
 	}
 
 

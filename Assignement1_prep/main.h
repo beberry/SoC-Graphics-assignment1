@@ -12,7 +12,5 @@ private:
 public:
 	main();
 	~main();
-
-
 };
 
