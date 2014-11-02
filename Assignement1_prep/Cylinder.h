@@ -10,7 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-class WindmillBase
+class Cylinder
 {
 private:
 	/* Common for graphics objects. */
@@ -34,11 +34,11 @@ private:
 	
 public:
 	// Common for graphics objects.
-	WindmillBase(GLfloat height);
-	~WindmillBase();
+	Cylinder(GLfloat height);
+	~Cylinder();
 
-	GLfloat* WindmillBase::getVertexPositions();
-	GLfloat* WindmillBase::getVerteColours();
+	GLfloat* Cylinder::getVertexPositions();
+	GLfloat* Cylinder::getVerteColours();
 
 	GLuint makeVBO(GLfloat numlats, GLfloat numlongs);
 	void makeUnitObject(GLuint numlats, GLuint numlongs);

@@ -22,6 +22,18 @@
     <Filter Include="Header Files\Objects">
       <UniqueIdentifier>{e9b522a1-3a0e-4afb-9fb9-da5687d144c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Objects\Primitives">
+      <UniqueIdentifier>{bd696049-6610-4c75-81b1-aa205775c19f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects\Models">
+      <UniqueIdentifier>{04c8f4ae-bf71-46fa-837f-c13bc0c6c34b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Models">
+      <UniqueIdentifier>{56deb752-9581-4866-88c2-25811848e4ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Primitives">
+      <UniqueIdentifier>{0031e12e-f5db-4219-9373-f167d934110f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -33,14 +45,14 @@
     <ClInclude Include="shaderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cube.h">
-      <Filter>Header Files\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WindmillBase.h">
-      <Filter>Header Files\Objects</Filter>
+    <ClInclude Include="Cube.h">
+      <Filter>Header Files\Objects\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Cylinder.h">
+      <Filter>Header Files\Objects\Primitives</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -57,10 +69,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Cube.cpp">
-      <Filter>Source Files\Objects</Filter>
+      <Filter>Source Files\Objects\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="WindmillBase.cpp">
-      <Filter>Source Files\Objects</Filter>
+    <ClCompile Include="Cylinder.cpp">
+      <Filter>Source Files\Objects\Primitives</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

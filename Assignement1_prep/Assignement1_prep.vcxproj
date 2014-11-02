@@ -85,7 +85,7 @@
     <ClInclude Include="GraphicsManager.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="shaderManager.h" />
-    <ClInclude Include="WindmillBase.h" />
+    <ClInclude Include="Cylinder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cube.cpp" />
@@ -93,7 +93,7 @@
     <ClCompile Include="GraphicsManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shaderManager.cpp" />
-    <ClCompile Include="WindmillBase.cpp" />
+    <ClCompile Include="Cylinder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\data.frag" />

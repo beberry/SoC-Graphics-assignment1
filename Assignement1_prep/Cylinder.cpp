@@ -1,10 +1,10 @@
-#include "WindmillBase.h"
+#include "Cylinder.h"
 
 /* Inlcude some standard headers */
 #include <iostream>
 
 /* Construction */
-WindmillBase::WindmillBase(GLfloat height)
+Cylinder::Cylinder(GLfloat height)
 {
 	this->topRadiusCoeff = 0.7;
 	this->height		 = 2;
@@ -14,12 +14,12 @@ WindmillBase::WindmillBase(GLfloat height)
 }
 
 /* Destructor */
-WindmillBase::~WindmillBase()
+Cylinder::~Cylinder()
 {
 }
 
 /* Create the vertex buffer object */
-GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
+GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 {
 	GLuint i, j;
 
@@ -240,7 +240,7 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 	return this->vertexCount;
 }
 
-void WindmillBase::makeUnitObject(GLuint numlats, GLuint numlongs)
+void Cylinder::makeUnitObject(GLuint numlats, GLuint numlongs)
 {
 	GLfloat DEG_TO_RADIANS = 3.141592f / 180.f;
 	GLuint vnum = 0;
@@ -279,7 +279,7 @@ void WindmillBase::makeUnitObject(GLuint numlats, GLuint numlongs)
 	}
 }
 
-void WindmillBase::draw()
+void Cylinder::draw()
 {
 	GLuint i;
 
@@ -328,7 +328,7 @@ void WindmillBase::draw()
 	}
 }
 
-void WindmillBase::setDrawmode(int drawmode)
+void Cylinder::setDrawmode(int drawmode)
 {
 	this->drawmode = drawmode;
 }

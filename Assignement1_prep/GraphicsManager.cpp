@@ -33,7 +33,7 @@ GLuint emitmode;
 GLuint modelID, viewID, projectionID, normalMatrixID, lightPosID, colourmodeID, emitmodeID;
 GLuint colorModeID;
 
-WindmillBase *wmbom;
+Cylinder *wmbom;
 GLfloat aspect_ratio;		/* Aspect ratio of the window defined in the reshape callback*/
 
 
@@ -51,7 +51,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	// Create the vertex array object and make it current
 	glBindVertexArray(vao);
 
-	wmbom = new WindmillBase(8.0);
+	wmbom = new Cylinder(8.0);
 
 	numspherevertices = wmbom->makeVBO(2.0f, 30.0f);
 	
