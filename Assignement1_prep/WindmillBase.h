@@ -13,16 +13,17 @@
 class WindmillBase
 {
 private:
-	// Common for graphics objects.
+	/* Common for graphics objects. */
 	GLfloat *vertexPositions;
+	glm::vec3 *vertexNormals;
 	GLfloat *vertexColours;
 
-	GLuint bufferObject, normalsBufferObject, sphereNormals, elementBuffer;
+	GLuint bufferObject, normalsBufferObject, elementBuffer;
 
 	int drawmode;
 	GLuint vertexCount;
 
-	// Only for this object.
+	/* Only for this object. */
 	GLfloat numlats;
 	GLfloat numlongs;
 
@@ -40,7 +41,7 @@ public:
 	GLfloat* WindmillBase::getVerteColours();
 
 	GLuint makeVBO(GLfloat numlats, GLfloat numlongs);
-	void makeUnitObject(GLfloat *pVertices, GLuint numlats, GLuint numlongs);
+	void makeUnitObject(GLuint numlats, GLuint numlongs);
 	void draw();
 	void setDrawmode(int drawmode);
 

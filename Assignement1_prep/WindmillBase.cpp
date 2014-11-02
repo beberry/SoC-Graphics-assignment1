@@ -29,13 +29,13 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 	/* Calculate the number of vertices required in hemisphere */
 	this->vertexCount = (numlats) * (numlongs);
 
-	GLfloat* pVertices = new GLfloat[this->vertexCount * 3];
-	GLfloat* pColours = new GLfloat[this->vertexCount * 4];
+	this->vertexPositions = new GLfloat[this->vertexCount * 3];
+	this->vertexColours   = new GLfloat[this->vertexCount * 4];
 
-	makeUnitObject(pVertices, numlats, numlongs);
+	makeUnitObject(numlats, numlongs);
 
 
-	glm::vec3* pNormals = new glm::vec3[this->vertexCount];
+	this->vertexNormals = new glm::vec3[this->vertexCount];
 	GLfloat* normalsDivisors = new GLfloat[this->vertexCount];
 
 
@@ -43,7 +43,7 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 	// init arr
 	for (int i = 0; i < this->vertexCount; i++)
 	{
-		pNormals[i] = glm::vec3(0.0, 0.0, 0.0);
+		this->vertexNormals[i] = glm::vec3(0.0, 0.0, 0.0);
 	}
 
 
@@ -78,9 +78,23 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 					p2Index = ind + 1;
 
 
-					glm::vec3 p0 = glm::vec3(pVertices[p0Index * 3], pVertices[p0Index * 3 + 1], pVertices[p0Index * 3 + 2]); // Current vertice
-					glm::vec3 p1 = glm::vec3(pVertices[p1Index * 3], pVertices[p1Index * 3 + 1], pVertices[p1Index * 3 + 2]);
-					glm::vec3 p2 = glm::vec3(pVertices[p2Index * 3], pVertices[p2Index * 3 + 1], pVertices[p2Index * 3 + 2]);
+					glm::vec3 p0 = glm::vec3(
+						this->vertexPositions[p0Index * 3],
+						this->vertexPositions[p0Index * 3 + 1],
+						this->vertexPositions[p0Index * 3 + 2]
+					);
+
+					glm::vec3 p1 = glm::vec3(
+						this->vertexPositions[p1Index * 3],
+						this->vertexPositions[p1Index * 3 + 1],
+						this->vertexPositions[p1Index * 3 + 2]
+					);
+
+					glm::vec3 p2 = glm::vec3(
+						this->vertexPositions[p2Index * 3],
+						this->vertexPositions[p2Index * 3 + 1],
+						this->vertexPositions[p2Index * 3 + 2]
+					);
 
 
 					glm::vec3 vecA = p1 - p0;
@@ -104,13 +118,24 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 					p2Index = ind + numlongs;
 
 
-					glm::vec3 p0 = glm::vec3(pVertices[p0Index * 3], pVertices[p0Index * 3 + 1], pVertices[p0Index * 3 + 2]); // Current vertice
-					glm::vec3 p1 = glm::vec3(pVertices[p1Index * 3], pVertices[p1Index * 3 + 1], pVertices[p1Index * 3 + 2]);
-					glm::vec3 p2 = glm::vec3(pVertices[p2Index * 3], pVertices[p2Index * 3 + 1], pVertices[p2Index * 3 + 2]);
+					glm::vec3 p0 = glm::vec3(
+						this->vertexPositions[p0Index * 3],
+						this->vertexPositions[p0Index * 3 + 1], 
+						this->vertexPositions[p0Index * 3 + 2]
+					);
 
+					glm::vec3 p1 = glm::vec3(
+						this->vertexPositions[p1Index * 3], 
+						this->vertexPositions[p1Index * 3 + 1], 
+						this->vertexPositions[p1Index * 3 + 2]
+					);
 
+					glm::vec3 p2 = glm::vec3(
+						this->vertexPositions[p2Index * 3], 
+						this->vertexPositions[p2Index * 3 + 1], 
+						this->vertexPositions[p2Index * 3 + 2]
+					);
 
-					GLfloat aa = pVertices[p1Index * 3 + 2];
 					glm::vec3 vecA = p1 - p0;
 					glm::vec3 vecB = p2 - p0;
 
@@ -119,23 +144,23 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 
 
 				// Set the normals
-				pNormals[p0Index] += crossP;
-				pNormals[p1Index] += crossP;
-				pNormals[p2Index] += crossP;
+				this->vertexNormals[p0Index] += crossP;
+				this->vertexNormals[p1Index] += crossP;
+				this->vertexNormals[p2Index] += crossP;
 				
 
 				if (ind % (lon + 1) == 0)
 				{
 					// First triangle in this strip.
-					pNormals[ind + (int)numlongs*2 - 1] += crossP;
-					pNormals[ind + (int)numlongs - 1] += crossP;
+					this->vertexNormals[ind + (int)numlongs * 2 - 1] += crossP;
+					this->vertexNormals[ind + (int)numlongs - 1] += crossP;
 				}
 
 				if ((ind + 1) % (int)numlongs == 0)
 				{
 					// Last triangle in this strip.
-					pNormals[ind - (int)numlongs + 1] += crossP;
-					pNormals[ind + 1] += crossP;
+					this->vertexNormals[ind - (int)numlongs + 1] += crossP;
+					this->vertexNormals[ind + 1] += crossP;
 
 				}
 			}
@@ -147,30 +172,30 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 	// Normalize the normals
 	for (int i = 0; i < this->vertexCount; i++)
 	{
-		pNormals[i] = glm::normalize(pNormals[i]);
-		std::cout << "x" << pNormals[i].x << " y" << pNormals[i].y << " z" << pNormals[i].z << std::endl;
+		this->vertexNormals[i] = glm::normalize(this->vertexNormals[i]);
+		std::cout << "x" << this->vertexNormals[i].x << " y" << this->vertexNormals[i].y << " z" << this->vertexNormals[i].z << std::endl;
 	}
 
 
 	/* Define colours as the x,y,z components of the sphere vertices */
 	for (i = 0; i < this->vertexCount; i++)
 	{
-		pColours[i * 4] = pVertices[i * 3];
-		pColours[i * 4 + 1] = pVertices[i * 3 + 1];
-		pColours[i * 4 + 2] = pVertices[i * 3 + 2];
-		pColours[i * 4 + 3] = 1.f;
+		this->vertexColours[i * 4]     = this->vertexPositions[i * 3];
+		this->vertexColours[i * 4 + 1] = this->vertexPositions[i * 3 + 1];
+		this->vertexColours[i * 4 + 2] = this->vertexPositions[i * 3 + 2];
+		this->vertexColours[i * 4 + 3] = 1.f;
 	}
 
 	/* Generate the vertex buffer object */
 	glGenBuffers(1, &this->bufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, this->bufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->vertexCount * 3, pVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->vertexCount * 3, this->vertexPositions, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	/* Store the normals in a buffer object */
-	glGenBuffers(1, &this->sphereNormals);
-	glBindBuffer(GL_ARRAY_BUFFER, this->sphereNormals);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*this->vertexCount, pNormals, GL_STATIC_DRAW);
+	glGenBuffers(1, &this->normalsBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, this->normalsBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*this->vertexCount, this->vertexNormals, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
@@ -212,14 +237,10 @@ GLuint WindmillBase::makeVBO(GLfloat numlats, GLfloat numlongs)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numindices * sizeof(GLuint), pindices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	delete pindices;
-	delete pColours;
-	delete pVertices;
-
 	return this->vertexCount;
 }
 
-void WindmillBase::makeUnitObject(GLfloat *pVertices, GLuint numlats, GLuint numlongs)
+void WindmillBase::makeUnitObject(GLuint numlats, GLuint numlongs)
 {
 	GLfloat DEG_TO_RADIANS = 3.141592f / 180.f;
 	GLuint vnum = 0;
@@ -248,7 +269,9 @@ void WindmillBase::makeUnitObject(GLfloat *pVertices, GLuint numlats, GLuint num
 
 
 			/* Define the vertex */
-			pVertices[vnum * 3] = x; pVertices[vnum * 3 + 1] = y; pVertices[vnum * 3 + 2] = z;
+			this->vertexPositions[vnum * 3]     = x; 
+			this->vertexPositions[vnum * 3 + 1] = y; 
+			this->vertexPositions[vnum * 3 + 2] = z;
 			
 			vnum++;
 			p++;
@@ -267,7 +290,7 @@ void WindmillBase::draw()
 
 	/* Bind the sphere normals */
 	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, this->sphereNormals);
+	glBindBuffer(GL_ARRAY_BUFFER, this->normalsBufferObject);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	/* Bind the sphere colours */

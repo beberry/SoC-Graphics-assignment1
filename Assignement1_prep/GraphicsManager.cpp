@@ -52,13 +52,6 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	glBindVertexArray(vao);
 
 	wmbom = new WindmillBase(8.0);
-	//GLfloat *a = this->windmillBaseModel->getVertexPositions();
-	//GLfloat *b = this->windmillBaseModel->getVerteColours();
-	/* Create a vertex buffer object to store vertices */
-	//glGenBuffers(1, &positionBufferObject);
-	//glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
-	//glBufferData(GL_ARRAY_BUFFER, windmillBaseModel->getVertexPositionsSize()*sizeof(GLfloat), windmillBaseModel->getVertexPositions(), GL_STATIC_DRAW);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	numspherevertices = wmbom->makeVBO(2.0f, 30.0f);
 	
