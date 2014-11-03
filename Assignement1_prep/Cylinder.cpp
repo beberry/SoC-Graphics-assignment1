@@ -36,7 +36,6 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 
 
 	this->vertexNormals = new glm::vec3[this->vertexCount];
-	GLfloat* normalsDivisors = new GLfloat[this->vertexCount];
 
 
 
@@ -237,6 +236,8 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numindices * sizeof(GLuint), pindices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+
+	delete pindices;
 	return this->vertexCount;
 }
 

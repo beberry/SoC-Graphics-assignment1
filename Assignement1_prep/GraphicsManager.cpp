@@ -17,10 +17,10 @@
 GLuint positionBufferObject, positionBufferObjectPyramid, colourObject;
 GLuint program;
 GLuint vao;
-GLuint numspherevertices;
+GLuint numCylinderVertices, numLightSourceVertices, numSphereVertices;
 GLuint drawmode;			// Defines drawing mode of sphere as points, lines or filled polygons
 
-GLfloat light_x, light_y, light_z, vx, vy, vz;;
+GLfloat light_x, light_y, light_z, vx, vy, vz;
 
 GLuint colourmode;	/* Index of a uniform to switch the colour mode in the vertex shader
 					I've included this to show you how to pass in an unsigned integer into
@@ -34,6 +34,9 @@ GLuint modelID, viewID, projectionID, normalMatrixID, lightPosID, colourmodeID, 
 GLuint colorModeID;
 
 Cylinder *wmbom;
+Sphere *lightSourceModel;
+Sphere *sphereModel;
+
 GLfloat aspect_ratio;		/* Aspect ratio of the window defined in the reshape callback*/
 
 
@@ -43,7 +46,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	colourmode = 0; emitmode = 0;
 
 	light_x = 0; light_y = 0; light_z = 0;
-		vx = 0; vx = 0, vz = 0;
+	vx = 0; vx = 0, vz = 0.f;
 
 	// Generate index (name) for one vertex array object
 	glGenVertexArrays(1, &vao);
@@ -51,9 +54,13 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	// Create the vertex array object and make it current
 	glBindVertexArray(vao);
 
-	wmbom = new Cylinder(8.0);
+	wmbom			 = new Cylinder(8.0);
+	lightSourceModel = new Sphere(8.0);
+	sphereModel		 = new Sphere(8.0);
 
-	numspherevertices = wmbom->makeVBO(2.0f, 30.0f);
+	numCylinderVertices	   = wmbom->makeVBO(2.0f, 2.0f);
+	numLightSourceVertices = lightSourceModel->makeVBO(20.0f, 30.0f);
+	numSphereVertices      = sphereModel->makeVBO(20.0f, 30.0f);
 	
 	/* Create a vertex buffer object to store vertex colours */
 	//glGenBuffers(1, &colourObject);
@@ -79,7 +86,6 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	modelID = glGetUniformLocation(program, "model");
 	viewID = glGetUniformLocation(program, "view");
 	projectionID = glGetUniformLocation(program, "projection");
-	colorModeID = glGetUniformLocation(program, "colorMode");
 	lightPosID = glGetUniformLocation(program, "lightPos");
 	colourmodeID = glGetUniformLocation(program, "colourmode");
 	emitmodeID = glGetUniformLocation(program, "emitmode");
@@ -100,29 +106,6 @@ void display()
 	/* Make the compiled shader program current */
 	glUseProgram(program);
 
-	/* Bind cube vertices. Note that this is in attribute index 0 */
-	//glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	/* Bind cube colours. Note that this is in attribute index 1 */
-	//glBindBuffer(GL_ARRAY_BUFFER, colourObject);
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-	/* Bind cube normals. Note that this is in attribute index 2 */
-	//glEnableVertexAttribArray(2);
-	//glBindBuffer(GL_ARRAY_BUFFER, normalsBufferObject);
-	//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	// Define the model transformations for the cube
-	glm::mat4 model = glm::mat4(1.0f);
-	//model = glm::translate(model, glm::vec3(x + 0.5, y, z));
-	//model = glm::scale(model, glm::vec3(scale, scale, scale));//scale equally in all axis
-	model = glm::rotate(model, -wmbom->angle_x, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
-	model = glm::rotate(model, -wmbom->angle_y, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
-	model = glm::rotate(model, -wmbom->angle_z, glm::vec3(0, 0, 1)); //rotating in clockwise direction around z-axis
-
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 
 	glm::mat4 Projection = glm::perspective(30.0f, aspect_ratio, 0.1f, 100.0f);
@@ -133,52 +116,109 @@ void display()
 		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
 
+
+
 	// Apply rotations to the view position
 	View = glm::rotate(View, -vx, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
 	View = glm::rotate(View, -vy, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
 	View = glm::rotate(View, -vz, glm::vec3(0, 0, 1));
 
-	// Calculate normal matrix
-	glm::mat3 gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View * model)));
-
-	glm::vec4 lightPos = View * glm::vec4(light_x, light_y, light_z, 1.0);
-
-	// Send our uniforms variables to the currently bound shader,
-	glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
-	//glUniform1ui(colourmodeID, colourmode);
-	glUniformMatrix4fv(viewID, 1, GL_FALSE, &View[0][0]);
-	glUniformMatrix4fv(projectionID, 1, GL_FALSE, &Projection[0][0]);
-	glUniformMatrix4fv(lightPosID, 1, GL_FALSE, glm::value_ptr(lightPos));
-	glUniform1ui(colourmodeID, colourmode);
-	glUniform1ui(emitmodeID, emitmode);
+	glm::vec4 lightPos = View *  glm::vec4(light_x, light_y, light_z, 1.0);
 
 
-	/* Draw our cube*/
-	//glDrawArrays(GL_TRIANGLES, 0, 36);
+	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat3 gl_NormalMatrix = glm::mat3(1.0f);
+
+	/* Individual Objects */
+
+	/* START Cylinder */
 
 	/* Define the model transformations for our sphere */
-	//model = glm::mat4(1.0f);
-	//model = glm::translate(model, glm::vec3(-x - 0.5, 0, 0));
-	//model = glm::scale(model, glm::vec3(scale / 3.f, scale / 3.f, scale / 3.f));//scale equally in all axis
-	//model = glm::rotate(model, -angle_x, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
-	//model = glm::rotate(model, -angle_y, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
-	//model = glm::rotate(model, -angle_z, glm::vec3(0, 0, 1)); //rotating in clockwise direction around z-axis
+	model = glm::mat4(1.0f);
+	//model = glm::translate(model, glm::vec3(light_x, light_y, light_z));
+	model = glm::scale(model, glm::vec3(0.5, 0.5, 0.5));//scale equally in all axis
+	model = glm::rotate(model, -wmbom->angle_x, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
+	model = glm::rotate(model, -wmbom->angle_y, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
+	model = glm::rotate(model, -wmbom->angle_z, glm::vec3(0, 0, 1)); //rotating in clockwise direction around z-axis
 
 	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
 
+	/* THE WORST MISTAKE...
+		Instead of
+
+		glUniform4fv(lightPosID, 1, glm::value_ptr(lightPos));
+
+		I had
+
+		glUniformMatrix4fv(projectionID, 1, GL_FALSE, &Projection[0][0]);
+	*/
+
 
 	// Send our uniforms variables to the currently bound shader,
+	glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
+	glUniformMatrix4fv(viewID, 1, GL_FALSE, &View[0][0]);
+	glUniformMatrix4fv(projectionID, 1, GL_FALSE, &Projection[0][0]);
+	glUniform4fv(lightPosID, 1, glm::value_ptr(lightPos));
+	glUniform1ui(colourmodeID, colourmode);
+	glUniform1ui(emitmodeID, emitmode);
 	glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
 
 
-	/* Draw our sphere */
+	/* Draw our Cylinder */
 	wmbom->draw();
 
+	/* END Cylinder */
+
+
+	/* ----------------------------------- */
+
+	/* START LIGHT Sphere */
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-0.7, 1, 1));
+	model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));//scale equally in all axis
+	model = glm::rotate(model, -sphereModel->angle_x, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
+	model = glm::rotate(model, -sphereModel->angle_y, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
+	model = glm::rotate(model, -sphereModel->angle_z, glm::vec3(0, 0, 1)); //rotating in clockwise direction around z-axis
+
+	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
+
+	glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
+	glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
+
+	/* Draw sphere */
+	glUniform1ui(emitmodeID, emitmode);
+	sphereModel->draw();
+
+	/* EMD Sphere */
+
+
+	/* ----------------------------------- */
+
+	/* START LIGHT Sphere */
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(light_x, light_y, light_z));
+	model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));//scale equally in all axis
+	model = glm::rotate(model, -lightSourceModel->angle_x, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
+	model = glm::rotate(model, -lightSourceModel->angle_y, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
+	model = glm::rotate(model, -lightSourceModel->angle_z, glm::vec3(0, 0, 1)); //rotating in clockwise direction around z-axis
+
+	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
+
+	glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
+	glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
+
+	/* Draw sphere */
+	emitmode = 1;
+	glUniform1ui(emitmodeID, emitmode);
+	lightSourceModel->draw();
+	emitmode = 0;
+
+	/* EnD Sphere */
+
+
 	glDisableVertexAttribArray(0);
-
-
-
-
 	glUseProgram(0);
 
 
@@ -204,7 +244,7 @@ static void errorCallback(int error, const char* description)
 /* change view angle, exit upon ESC */
 void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 {
-	if (action != GLFW_PRESS) return;
+	//if (action != GLFW_PRESS) return;
 
 	if (k == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
@@ -243,6 +283,8 @@ void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 		if (drawmode > 2) drawmode = 0;
 
 		wmbom->setDrawmode(drawmode);
+		lightSourceModel->setDrawmode(drawmode);
+		sphereModel->setDrawmode(drawmode);
 	}
 
 

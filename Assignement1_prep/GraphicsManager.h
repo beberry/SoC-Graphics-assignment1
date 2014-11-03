@@ -8,6 +8,7 @@
 // OpenGL objects.
 #include "Cube.h"
 #include "Cylinder.h"
+#include "Sphere.h"
 
 // Other
 #include "glfw_wrap.h"
@@ -17,7 +18,6 @@ class GraphicsManager
 private:
 	void GraphicsManager::init(Glfw_wrap *glw);
 	Cube *cubeModel;
-	Cylinder *windmillBaseModel;
 
 public:
 	GraphicsManager();
