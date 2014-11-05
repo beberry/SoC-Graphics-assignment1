@@ -73,7 +73,7 @@ void main()
 	//vec3 specular = pow(max(dot(R, V), 0.0), shininess) * specular_albedo;
 
 	// Calculate the attenuation factor;
-	float attenuation_k = 1.2;
+	float attenuation_k = 2.0;
     float attenuation = 1.0 / (1.0 + attenuation_k * pow(distanceToLight, 2));
 	
 	// If emitmode is 1 then we enable emmissive lighting
