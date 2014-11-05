@@ -27,7 +27,7 @@ Windmill::~Windmill()
 void Windmill::createTop()
 {
 	this->topModel = new Sphere(this->topMaxWidth, this->topHeight, true);
-	this->topModel->makeVBO(10.0f, 4.0f);
+	this->topModel->makeVBO(20.0f, 30.0f);
 }
 
 /* Create the base object for the windmill. */

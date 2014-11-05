@@ -49,7 +49,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	zoom = 1.0f;
 
 
-	light_x = 0; light_y = 0; light_z = 0.7;
+	light_x = 1.0; light_y = 1.0; light_z = 1.0;
 	vx = 0; vx = 0, vz = 0.f;
 
 	// Generate index (name) for one vertex array object
@@ -172,9 +172,9 @@ void display()
 
 
 	/* Draw our Windmill */
-	modelScale.push(glm::scale(modelScale.top(), glm::vec3(0.5, 0.5, 0.5)));
+	//modelScale.push(glm::scale(modelScale.top(), glm::vec3(0.5, 0.5, 0.5)));
 	windmill->draw(View, modelTranslate, modelScale, modelRotate);
-	modelScale.pop();
+	//modelScale.pop();
 	/* END Cylinder */
 
 

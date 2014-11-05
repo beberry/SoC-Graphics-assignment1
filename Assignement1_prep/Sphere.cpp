@@ -50,9 +50,9 @@ GLuint Sphere::makeVBO(GLfloat numlats, GLfloat numlongs)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	/* Store the colours in a buffer object */
-	/*glGenBuffers(1, &this->vertexColours);
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexColours);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)* this->vertexCount * 4, this->vertexColours, GL_STATIC_DRAW);
+	/*glGenBuffers(1, &sphereColours);
+	glBindBuffer(GL_ARRAY_BUFFER, sphereColours);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)* numvertices * 4, pColours, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
 	/* Calculate the number of indices in our index array and allocate memory for it */
@@ -88,6 +88,7 @@ GLuint Sphere::makeVBO(GLfloat numlats, GLfloat numlongs)
 	{
 		pindices[index++] = i;
 	}
+
 	pindices[index] = this->vertexCount - 2;	// Tie up last triangle in fan
 
 	// Generate a buffer for the indices
@@ -110,40 +111,44 @@ void Sphere::makeUnitObject(GLuint numlats, GLuint numlongs)
 	GLfloat x, y, z, lat_radians, lon_radians;
 
 	/* Define north pole */
-	this->vertexPositions[0] = 0; this->vertexPositions[1] = 0; this->vertexPositions[2] = 1.f;
+	this->vertexPositions[0] = 0; 
+	this->vertexPositions[1] = 0; 
+	this->vertexPositions[2] = 1.f;
+
 	vnum++;
 
 	GLfloat latstep = 180.f / numlats;
-	GLfloat longstep = 0.f;
-	GLfloat longLimit = 0.f;
+	GLfloat longstep = 360.f / numlongs;
+	GLfloat longLimit = 180.f;
+	GLfloat longStart = -180.f;
 
 	/* Check whether full sphere needs to be drawed or just half of it. */
 	if (this->halfSphere)
 	{
-		longstep = 180.f / numlongs;
-		longLimit = 0.0f;
-	}
-	else
-	{
-		longstep = 360.f / numlongs;
-		longLimit = -180.f;
+		longstep  = 180.f / (numlongs-1);
+		longLimit = 180.0f;
+		longStart = 0.0f;
 	}
 
 	/* Define vertices along latitude lines */
+	GLfloat lon = 0.0f;
 	for (GLfloat lat = 90.f - latstep; lat > -90.f; lat -= latstep)
 	{
+
+		int k = 0;
 		lat_radians = lat * DEG_TO_RADIANS;
-		for (GLfloat lon = 180.f; lon > longLimit; lon-= longstep)
+		for ( lon = longStart; k < numlongs; lon += longstep)
 		{
 			lon_radians = lon * DEG_TO_RADIANS;
 
-			x = cos(lat_radians) * cos(lon_radians) * this->maxWidth;
-			y = cos(lat_radians) * sin(lon_radians) * this->maxHeight;
-			z = sin(lat_radians) * this->maxWidth;
+			x = cos(lat_radians) * cos(lon_radians);
+			y = cos(lat_radians) * sin(lon_radians);
+			z = sin(lat_radians);
 
 			/* Define the vertex */
 			this->vertexPositions[vnum * 3] = x; this->vertexPositions[vnum * 3 + 1] = y; this->vertexPositions[vnum * 3 + 2] = z;
 			vnum++;
+			k++;
 		}
 	}
 	/* Define south pole */
