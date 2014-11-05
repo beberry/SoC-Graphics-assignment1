@@ -97,7 +97,7 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 				glm::vec3 vecA = p1 - p0;
 				glm::vec3 vecB = p2 - p0;
 
-				crossP = glm::cross(vecA, vecB);
+				crossP = glm::cross(vecB, vecA);
 			}
 			else
 			{
@@ -136,7 +136,7 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 				glm::vec3 vecA = p1 - p0;
 				glm::vec3 vecB = p2 - p0;
 
-				crossP = glm::cross(vecB, vecA);
+				crossP = glm::cross(vecA, vecB);
 			}
 
 

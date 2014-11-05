@@ -172,9 +172,9 @@ void display()
 
 
 	/* Draw our Windmill */
-	//modelScale.push(glm::scale(modelScale.top(), glm::vec3(0.5, 0.5, 0.5)));
+	modelScale.push(glm::scale(modelScale.top(), glm::vec3(0.4, 0.4, 0.4)));
 	windmill->draw(View, modelTranslate, modelScale, modelRotate);
-	//modelScale.pop();
+	modelScale.pop();
 	/* END Cylinder */
 
 
