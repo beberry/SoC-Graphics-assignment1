@@ -169,7 +169,7 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	for (int i = 0; i < this->vertexCount; i++)
 	{
 		this->vertexNormals[i] = glm::normalize(this->vertexNormals[i]);
-		std::cout << "x" << this->vertexNormals[i].x << " y" << this->vertexNormals[i].y << " z" << this->vertexNormals[i].z << std::endl;
+		//std::cout << "x" << this->vertexNormals[i].x << " y" << this->vertexNormals[i].y << " z" << this->vertexNormals[i].z << std::endl;
 	}
 
 
