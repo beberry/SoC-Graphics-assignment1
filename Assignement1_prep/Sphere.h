@@ -26,13 +26,15 @@ private:
 	/* Only for this object. */
 	GLfloat numlats;
 	GLfloat numlongs;
+	bool halfSphere;
 
-	GLfloat radius;
+	GLfloat maxWidth;
+	GLfloat maxHeight;
 
 
 public:
 	// Common for graphics objects.
-	Sphere(GLfloat radius);
+	Sphere(GLfloat maxWidth, GLfloat maxHeight, bool halfSphere);
 	~Sphere();
 
 	GLfloat* Sphere::getVertexPositions();

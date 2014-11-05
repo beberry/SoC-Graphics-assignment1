@@ -87,6 +87,7 @@
     <ClInclude Include="shaderManager.h" />
     <ClInclude Include="Cylinder.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="Windmill.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cube.cpp" />
@@ -96,6 +97,7 @@
     <ClCompile Include="shaderManager.cpp" />
     <ClCompile Include="Cylinder.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="Windmill.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\data.frag" />

@@ -4,11 +4,11 @@
 #include <iostream>
 
 /* Construction */
-Cylinder::Cylinder(GLfloat height)
+Cylinder::Cylinder(GLfloat height, GLfloat maxTopRadius)
 {
-	this->topRadiusCoeff = 0.7;
-	this->height		 = 2;
-	this->bottomRadius	 = 2;
+	this->radiussCoeff = 1.12;
+	this->height		 = height;
+	this->maxTopRadius = maxTopRadius;
 	this->drawmode	     = 3;
 	this->vertexCount    = 0;
 }
@@ -58,110 +58,107 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 			int p1Index = 0;
 			int p2Index = 0;
 
-			//if (!(ind % 2 == 0 && lat != numlats - 1))
+			glm::vec3 crossP = glm::cross(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
+
+			if ((ind+1) % 2 == 0)
 			{
-				glm::vec3 crossP = glm::cross(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
-
-				if ((ind+1) % 2 == 0)
-				{
-					// Triangle looks like this
-					// p2*------* p1
-					//    \    |
-					//     \   |
-					//      \  |
-					//       \ |
-					//        \|
-					//         * p0 current point, so the other two points are one lat above.
-					p0Index = ind;
-					p1Index = ind + numlongs;
-					p2Index = ind + 1;
+				// Triangle looks like this
+				// p2*------* p1
+				//    \    |
+				//     \   |
+				//      \  |
+				//       \ |
+				//        \|
+				//         * p0 current point, so the other two points are one lat above.
+				p0Index = ind;
+				p1Index = ind + numlongs;
+				p2Index = ind + 1;
 
 
-					glm::vec3 p0 = glm::vec3(
-						this->vertexPositions[p0Index * 3],
-						this->vertexPositions[p0Index * 3 + 1],
-						this->vertexPositions[p0Index * 3 + 2]
-					);
+				glm::vec3 p0 = glm::vec3(
+					this->vertexPositions[p0Index * 3],
+					this->vertexPositions[p0Index * 3 + 1],
+					this->vertexPositions[p0Index * 3 + 2]
+				);
 
-					glm::vec3 p1 = glm::vec3(
-						this->vertexPositions[p1Index * 3],
-						this->vertexPositions[p1Index * 3 + 1],
-						this->vertexPositions[p1Index * 3 + 2]
-					);
+				glm::vec3 p1 = glm::vec3(
+					this->vertexPositions[p1Index * 3],
+					this->vertexPositions[p1Index * 3 + 1],
+					this->vertexPositions[p1Index * 3 + 2]
+				);
 
-					glm::vec3 p2 = glm::vec3(
-						this->vertexPositions[p2Index * 3],
-						this->vertexPositions[p2Index * 3 + 1],
-						this->vertexPositions[p2Index * 3 + 2]
-					);
-
-
-					glm::vec3 vecA = p1 - p0;
-					glm::vec3 vecB = p2 - p0;
-
-					crossP = glm::cross(vecA, vecB);
-				}
-				else
-				{
-					// Triangle looks like this
-					//    * p2
-					//    |\
-					//    | \
-					//    |  \
-					//    |   \
-					//    |    \
-					//  p0*------* p1   p0 - current point
-
-					p0Index = ind;
-					p1Index = ind + 1;
-					p2Index = ind + numlongs;
+				glm::vec3 p2 = glm::vec3(
+					this->vertexPositions[p2Index * 3],
+					this->vertexPositions[p2Index * 3 + 1],
+					this->vertexPositions[p2Index * 3 + 2]
+				);
 
 
-					glm::vec3 p0 = glm::vec3(
-						this->vertexPositions[p0Index * 3],
-						this->vertexPositions[p0Index * 3 + 1], 
-						this->vertexPositions[p0Index * 3 + 2]
-					);
+				glm::vec3 vecA = p1 - p0;
+				glm::vec3 vecB = p2 - p0;
 
-					glm::vec3 p1 = glm::vec3(
-						this->vertexPositions[p1Index * 3], 
-						this->vertexPositions[p1Index * 3 + 1], 
-						this->vertexPositions[p1Index * 3 + 2]
-					);
+				crossP = glm::cross(vecA, vecB);
+			}
+			else
+			{
+				// Triangle looks like this
+				//    * p2
+				//    |\
+				//    | \
+				//    |  \
+				//    |   \
+				//    |    \
+				//  p0*------* p1   p0 - current point
 
-					glm::vec3 p2 = glm::vec3(
-						this->vertexPositions[p2Index * 3], 
-						this->vertexPositions[p2Index * 3 + 1], 
-						this->vertexPositions[p2Index * 3 + 2]
-					);
-
-					glm::vec3 vecA = p1 - p0;
-					glm::vec3 vecB = p2 - p0;
-
-					crossP = glm::cross(vecB, vecA);
-				}
+				p0Index = ind;
+				p1Index = ind + 1;
+				p2Index = ind + numlongs;
 
 
-				// Set the normals
-				this->vertexNormals[p0Index] += crossP;
-				this->vertexNormals[p1Index] += crossP;
-				this->vertexNormals[p2Index] += crossP;
+				glm::vec3 p0 = glm::vec3(
+					this->vertexPositions[p0Index * 3],
+					this->vertexPositions[p0Index * 3 + 1], 
+					this->vertexPositions[p0Index * 3 + 2]
+				);
+
+				glm::vec3 p1 = glm::vec3(
+					this->vertexPositions[p1Index * 3], 
+					this->vertexPositions[p1Index * 3 + 1], 
+					this->vertexPositions[p1Index * 3 + 2]
+				);
+
+				glm::vec3 p2 = glm::vec3(
+					this->vertexPositions[p2Index * 3], 
+					this->vertexPositions[p2Index * 3 + 1], 
+					this->vertexPositions[p2Index * 3 + 2]
+				);
+
+				glm::vec3 vecA = p1 - p0;
+				glm::vec3 vecB = p2 - p0;
+
+				crossP = glm::cross(vecB, vecA);
+			}
+
+
+			// Set the normals
+			this->vertexNormals[p0Index] += crossP;
+			this->vertexNormals[p1Index] += crossP;
+			this->vertexNormals[p2Index] += crossP;
 				
 
-				if (ind % (lon + 1) == 0)
-				{
-					// First triangle in this strip.
-					this->vertexNormals[ind + (int)numlongs * 2 - 1] += crossP;
-					this->vertexNormals[ind + (int)numlongs - 1] += crossP;
-				}
+			if (ind % ((int)numlongs + 1) == 0)
+			{
+				// First triangle in this strip.
+				this->vertexNormals[ind + (int)numlongs * 2 - 1] += crossP;
+				this->vertexNormals[ind + (int)numlongs - 1] += crossP;
+			}
 
-				if ((ind + 1) % (int)numlongs == 0)
-				{
-					// Last triangle in this strip.
-					this->vertexNormals[ind - (int)numlongs + 1] += crossP;
-					this->vertexNormals[ind + 1] += crossP;
+			if ((ind + 1) % (int)numlongs == 0)
+			{
+				// Last triangle in this strip.
+				this->vertexNormals[ind - (int)numlongs + 1] += crossP;
+				this->vertexNormals[ind + 1] += crossP;
 
-				}
 			}
 
 			ind++;
@@ -247,15 +244,16 @@ void Cylinder::makeUnitObject(GLuint numlats, GLuint numlongs)
 	GLuint vnum = 0;
 	GLfloat x, y, z, lat_radians, lon_radians;
 
-	GLfloat latstep = this->height / numlats;
+	GLfloat latstep = this->height / (numlats);
 	GLfloat longstep = 360.f / numlongs;
 
-	for (GLfloat i = -this->height / 2.0f; i < this->height/2; i += latstep)
+	int latI = 0;
+
+	GLfloat radiuss = this->maxTopRadius;
+
+	for (GLfloat i = 0; latI < numlats; i -= latstep)
 	{
-		if (vnum > 0)
-		{
-			this->bottomRadius = this->bottomRadius*this->topRadiusCoeff;
-		}
+		latI++;
 
 		/* Define vertices along latitude lines */
 		int p = 0;
@@ -264,9 +262,9 @@ void Cylinder::makeUnitObject(GLuint numlats, GLuint numlongs)
 		{
 			lon_radians = (lon)* DEG_TO_RADIANS;
 
-			x = cos(lon_radians)*this->bottomRadius;
+			x = cos(lon_radians)*radiuss;
 			y = i;
-			z = sin(lon_radians)*this->bottomRadius;
+			z = sin(lon_radians)*radiuss;
 
 
 			/* Define the vertex */
@@ -277,6 +275,8 @@ void Cylinder::makeUnitObject(GLuint numlats, GLuint numlongs)
 			vnum++;
 			p++;
 		}
+
+		radiuss = radiuss * this->radiussCoeff;
 	}
 }
 

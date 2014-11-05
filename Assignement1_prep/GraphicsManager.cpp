@@ -33,19 +33,23 @@ GLuint emitmode;
 GLuint modelID, viewID, projectionID, normalMatrixID, lightPosID, colourmodeID, emitmodeID;
 GLuint colorModeID;
 
-Cylinder *wmbom;
+
 Sphere *lightSourceModel;
-Sphere *sphereModel;
+Windmill *windmill;
 
 GLfloat aspect_ratio;		/* Aspect ratio of the window defined in the reshape callback*/
 
+GLfloat zoom;
 
 void GraphicsManager::init(Glfw_wrap *glfw)
 {
 	aspect_ratio = 1.3333f;
 	colourmode = 0; emitmode = 0;
 
-	light_x = 0; light_y = 0; light_z = 0;
+	zoom = 1.0f;
+
+
+	light_x = 0; light_y = 0; light_z = 0.7;
 	vx = 0; vx = 0, vz = 0.f;
 
 	// Generate index (name) for one vertex array object
@@ -54,13 +58,11 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	// Create the vertex array object and make it current
 	glBindVertexArray(vao);
 
-	wmbom			 = new Cylinder(8.0);
-	lightSourceModel = new Sphere(8.0);
-	sphereModel		 = new Sphere(8.0);
+	lightSourceModel = new Sphere(0.5, 0.5, false);
 
-	numCylinderVertices	   = wmbom->makeVBO(2.0f, 2.0f);
+	//numCylinderVertices	   = wmbom->makeVBO(3.0f, 50.0f);
 	numLightSourceVertices = lightSourceModel->makeVBO(20.0f, 30.0f);
-	numSphereVertices      = sphereModel->makeVBO(20.0f, 30.0f);
+	//numSphereVertices      = sphereModel->makeVBO(20.0f, 30.0f);
 	
 	/* Create a vertex buffer object to store vertex colours */
 	//glGenBuffers(1, &colourObject);
@@ -89,6 +91,8 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	lightPosID = glGetUniformLocation(program, "lightPos");
 	colourmodeID = glGetUniformLocation(program, "colourmode");
 	emitmodeID = glGetUniformLocation(program, "emitmode");
+
+	windmill = new Windmill(5.0, 1.0, 0.73, modelID, normalMatrixID);
 }
 
 
@@ -119,6 +123,7 @@ void display()
 
 
 	// Apply rotations to the view position
+	View = glm::scale(View, glm::vec3(zoom, zoom, zoom));
 	View = glm::rotate(View, -vx, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
 	View = glm::rotate(View, -vy, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
 	View = glm::rotate(View, -vz, glm::vec3(0, 0, 1));
@@ -126,22 +131,23 @@ void display()
 	glm::vec4 lightPos = View *  glm::vec4(light_x, light_y, light_z, 1.0);
 
 
+
+	/* Define a stack for model transformations. */
 	glm::mat4 model = glm::mat4(1.0f);
+	std::stack<glm::mat4> modelTranslate;
+	std::stack<glm::mat4> modelScale;
+	std::stack<glm::mat4> modelRotate;
+
+	modelTranslate.push(glm::mat4(1.0f));
+	modelScale.push(glm::mat4(1.0f));
+	modelRotate.push(glm::mat4(1.0f));
+
 	glm::mat3 gl_NormalMatrix = glm::mat3(1.0f);
 
 	/* Individual Objects */
 
-	/* START Cylinder */
+	/* START Windmill */
 
-	/* Define the model transformations for our sphere */
-	model = glm::mat4(1.0f);
-	//model = glm::translate(model, glm::vec3(light_x, light_y, light_z));
-	model = glm::scale(model, glm::vec3(0.5, 0.5, 0.5));//scale equally in all axis
-	model = glm::rotate(model, -wmbom->angle_x, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
-	model = glm::rotate(model, -wmbom->angle_y, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
-	model = glm::rotate(model, -wmbom->angle_z, glm::vec3(0, 0, 1)); //rotating in clockwise direction around z-axis
-
-	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
 
 	/* THE WORST MISTAKE...
 		Instead of
@@ -152,7 +158,8 @@ void display()
 
 		glUniformMatrix4fv(projectionID, 1, GL_FALSE, &Projection[0][0]);
 	*/
-
+	model = modelTranslate.top() * modelScale.top() * modelRotate.top();
+	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
 
 	// Send our uniforms variables to the currently bound shader,
 	glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
@@ -164,36 +171,12 @@ void display()
 	glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
 
 
-	/* Draw our Cylinder */
-	wmbom->draw();
-
+	/* Draw our Windmill */
+	modelScale.push(glm::scale(modelScale.top(), glm::vec3(0.5, 0.5, 0.5)));
+	windmill->draw(View, modelTranslate, modelScale, modelRotate);
+	modelScale.pop();
 	/* END Cylinder */
 
-
-	/* ----------------------------------- */
-
-	/* START LIGHT Sphere */
-
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-0.7, 1, 1));
-	model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));//scale equally in all axis
-	model = glm::rotate(model, -sphereModel->angle_x, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
-	model = glm::rotate(model, -sphereModel->angle_y, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
-	model = glm::rotate(model, -sphereModel->angle_z, glm::vec3(0, 0, 1)); //rotating in clockwise direction around z-axis
-
-	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
-
-	glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
-	glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
-
-	/* Draw sphere */
-	glUniform1ui(emitmodeID, emitmode);
-	sphereModel->draw();
-
-	/* EMD Sphere */
-
-
-	/* ----------------------------------- */
 
 	/* START LIGHT Sphere */
 
@@ -222,9 +205,9 @@ void display()
 	glUseProgram(0);
 
 
-	wmbom->angle_x += wmbom->angle_inc_x;
-	wmbom->angle_y += wmbom->angle_inc_y;
-	wmbom->angle_z += wmbom->angle_inc_z;
+	//wmbom->angle_x += wmbom->angle_inc_x;
+	//wmbom->angle_y += wmbom->angle_inc_y;
+	//wmbom->angle_z += wmbom->angle_inc_z;
 
 }
 
@@ -249,12 +232,17 @@ void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	if (k == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	if (k == 'Q') wmbom->angle_inc_x -= 0.05f;
+	/*if (k == 'Q') wmbom->angle_inc_x -= 0.05f;
 	if (k == 'W') wmbom->angle_inc_x += 0.05f;
 	if (k == 'E') wmbom->angle_inc_y -= 0.05f;
 	if (k == 'R') wmbom->angle_inc_y += 0.05f;
 	if (k == 'T') wmbom->angle_inc_z -= 0.05f;
-	if (k == 'Y') wmbom->angle_inc_z += 0.05f;
+	if (k == 'Y') wmbom->angle_inc_z += 0.05f;*/
+
+
+	if (k == 'Z') zoom += 0.05f;
+	if (k == 'X') zoom -= 0.05f;
+
 
 	if (k == '1') light_x -= 0.05f;
 	if (k == '2') light_x += 0.05f;
@@ -282,9 +270,8 @@ void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 		drawmode++;
 		if (drawmode > 2) drawmode = 0;
 
-		wmbom->setDrawmode(drawmode);
 		lightSourceModel->setDrawmode(drawmode);
-		sphereModel->setDrawmode(drawmode);
+		windmill->setDrawmode(drawmode);
 	}
 
 

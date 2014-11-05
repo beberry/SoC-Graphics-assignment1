@@ -28,13 +28,13 @@ private:
 	GLfloat numlongs;
 
 	GLfloat height;
-	GLfloat bottomRadius;
-	GLfloat topRadiusCoeff; // used to multiply the bottom radius with this coeff, to get the top radius.
+	GLfloat maxTopRadius;
+	GLfloat radiussCoeff; // used to multiply the bottom radius with this coeff, to get the top radius.
 
 	
 public:
 	// Common for graphics objects.
-	Cylinder(GLfloat height);
+	Cylinder(GLfloat height, GLfloat maxBottomRadius);
 	~Cylinder();
 
 	GLfloat* Cylinder::getVertexPositions();

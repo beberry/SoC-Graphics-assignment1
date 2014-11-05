@@ -53,7 +53,7 @@ void main()
 	vec4 P = mv_matrix * position_h;	// Modify the vertex position (x, y, z, w) by the model-view transformation
 	vec3 N = normalize(normalmatrix * normal);		// Modify the normals by the normal-matrix (i.e. to model-view (or eye) coordinates )
 	vec3 L = light_pos3 - P.xyz;		// Calculate the vector from the light position to the vertex in eye space
-	float distanceToLight = length(L);	// For attenuation
+	float distanceToLight = abs(length(L));	// For attenuation
 	L = normalize(L);					// Normalise our light vector
 
 
