@@ -37,5 +37,5 @@ void main()
 	if (emitmode == 1) emissive = vec3(1.0, 1.0, 0.8);
 
 	
-	outputColor = vec4((ambient+diffuse+specular)+global_ambient+emissive, 1.0);
+	outputColor = vec4(fattenuation*(ambient+diffuse+specular)+global_ambient+emissive, 1.0);
 }
