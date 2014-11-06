@@ -48,7 +48,7 @@ void Windmill::createWings()
 {
 	for (int i = 0; i < this->wingCount; i++)
 	{
-		WindmillWing *tmpWing = new WindmillWing(3.0f, 0.5f, 0.2f);
+		WindmillWing *tmpWing = new WindmillWing(1.0f, 0.25f, 0.07f);
 		tmpWing->makeVBO(0, 0);
 		this->wings.push_back(tmpWing);
 	}
@@ -68,14 +68,15 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 	glUniformMatrix4fv(this->modelID, 1, GL_FALSE, &model[0][0]);
 	glUniformMatrix3fv(this->normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
 
-//	this->topModel->draw();
+	this->topModel->draw();
 	//modelTranslate.pop();
 
 	/* Do some transformations with the base of the windmill. */
 	//modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(0.0, -1.0, 0)));
 	model = modelTranslate.top() * modelScale.top() * modelRotate.top();
 	glUniformMatrix4fv(this->modelID, 1, GL_FALSE, &model[0][0]);
-//	this->baseModel->draw();
+	this->baseModel->draw();
+	//modelTranslate.pop();
 
 	/* Do some transformations with the wings of the windmill. */
 	GLfloat wingAngle = 360.f / this->wingCount;
@@ -95,7 +96,7 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 		int quadrant = activeAngle/90.0+1; /* Calculate in which quadrant the figure is ( I, II, III, IV ) */
 
-		GLfloat radiuss = 1.0f;
+		GLfloat radiuss = 0.3f;
 		GLfloat xMove = 0.0f;
 		GLfloat yMove = 0.0f;
 
@@ -123,7 +124,7 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 		}
 
 
-		modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(xMove, yMove, 0)));
+		modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(xMove, yMove, 0.4)));
 		modelRotate.push(glm::rotate(modelRotate.top(), currentAngle, glm::vec3(0, 0, 1)));
 		model = modelTranslate.top() * modelScale.top() * modelRotate.top();
 

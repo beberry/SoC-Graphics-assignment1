@@ -16,13 +16,11 @@ class Cube
 {
 private:
 	/* Common for graphics objects. */
-	std::vector<GLfloat> *vertexPositions;
-	GLfloat *vertexNormals;
+	std::vector<GLfloat> vertexPositions;
+	std::vector<GLfloat> vertexNormals;
 	GLfloat *vertexColours;
 
 	GLuint bufferObject, normalsBufferObject, elementBuffer;
-
-	int kk;
 
 	int drawmode;
 	GLuint vertexCount;

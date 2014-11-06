@@ -6,7 +6,7 @@ Cube::Cube()
 	this->drawmode = 3;
 
 	/* Define vertices for a cube in 12 triangles */
-	std::vector<GLfloat> vertexPositions =
+	this->vertexPositions =
 	{
 		-0.25f, 0.25f, -0.25f, 
 		-0.25f, -0.25f, -0.25f, 
@@ -107,7 +107,7 @@ Cube::Cube()
 		-0.25f, 0.25f, -0.25f,
 	};
 
-	GLfloat normals[] =
+	this->vertexNormals = 
 	{
 		0, 0, -1.f, 0, 0, -1.f, 0, 0, -1.f,
 		0, 0, -1.f, 0, 0, -1.f, 0, 0, -1.f,
@@ -125,10 +125,8 @@ Cube::Cube()
 
 
 	
-	this->vertexPositions = &vertexPositions;
 	this->vertexColours   = vertexColours;
-	this->vertexNormals	  = normals;
-
+	int k = 0;
 	/* Generate the vertex buffer object 
 	glGenBuffers(1, &this->bufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, this->bufferObject);
@@ -159,7 +157,7 @@ GLuint Cube::makeVBO()
 
 std::vector<GLfloat>* Cube::getVertexPositions()
 {
-	return this->vertexPositions;
+	return &this->vertexPositions;
 }
 
 GLfloat* Cube::getVerteColours()
@@ -169,24 +167,23 @@ GLfloat* Cube::getVerteColours()
 
 void Cube::setVertexPositions(std::vector<GLfloat> vertexPositions)
 {
-	this->vertexPositions = &vertexPositions;
+	this->vertexPositions = vertexPositions;
 	//glClearBufferData(this->bufferObject, );
 	/*Generate the vertex buffer object */
 	glGenBuffers(1, &this->bufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, this->bufferObject);
-	glBufferData(GL_ARRAY_BUFFER, this->vertexPositions->size()*sizeof(GLfloat), this->vertexPositions->data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->vertexPositions.size()*sizeof(GLfloat), this->vertexPositions.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+	this->vertexNormals;
 	/* Store the normals in a buffer object */
 	glGenBuffers(1, &this->normalsBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, this->normalsBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(glm::vec3), this->vertexNormals, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->vertexNormals.size()*sizeof(GLfloat), this->vertexNormals.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Cube::draw()
 {
-	this->kk;
 	this->vertexPositions;
 
 	/* Bind cube vertices. Note that this is in attribute index 0 */

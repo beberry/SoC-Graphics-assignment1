@@ -94,7 +94,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	colourmodeID = glGetUniformLocation(program, "colourmode");
 	emitmodeID = glGetUniformLocation(program, "emitmode");
 
-	windmill = new Windmill(10, 4.0, 1.0, 0.73, modelID, normalMatrixID);
+	windmill = new Windmill(5, 4.0, 1.0, 0.73, modelID, normalMatrixID);
 }
 
 
