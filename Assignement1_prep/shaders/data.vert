@@ -58,7 +58,7 @@ void main()
 
 
 	// Pass to fragment shader.
-	fnormal = N;
+	fnormal   = N;
 	fposition = light_pos3;
 	flightdir = L;
 

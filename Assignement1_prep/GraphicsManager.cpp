@@ -49,7 +49,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	zoom = 1.0f;
 
 
-	light_x = 1.0; light_y = 1.0; light_z = 1.0;
+	light_x = 0.7; light_y = 0.7; light_z = 1.0;
 	vx = 0; vx = 0, vz = 0.f;
 	wingAngle = 0.0f;
 	wingAngle_inc = 0.0f;
@@ -124,7 +124,7 @@ void display()
 	glm::mat4 Projection = glm::perspective(30.0f, aspect_ratio, 0.1f, 100.0f);
 
 	glm::mat4 View = glm::lookAt(
-		glm::vec3(0, 0, 10), // Camera is at (0,0,4), in World Space
+		glm::vec3(0, 0, 4), // Camera is at (0,0,4), in World Space
 		glm::vec3(0, 0, 0), // and looks at the origin
 		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);

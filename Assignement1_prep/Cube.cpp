@@ -217,3 +217,8 @@ void Cube::draw()
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 }
+
+void Cube::setDrawmode(int drawmode)
+{
+	this->drawmode = drawmode;
+}

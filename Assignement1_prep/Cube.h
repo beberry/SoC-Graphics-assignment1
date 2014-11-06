@@ -42,10 +42,10 @@ public:
 	std::vector<GLfloat>* Cube::getVertexPositions();
 	GLfloat* Cube::getVerteColours();
 
-	GLuint makeVBO();
-	void makeUnitObject(GLuint numlats, GLuint numlongs);
-	void draw();
-	void setDrawmode(int drawmode);
+	GLuint Cube::makeVBO();
+	void Cube::makeUnitObject(GLuint numlats, GLuint numlongs);
+	void Cube::draw();
+	void Cube::setDrawmode(int drawmode);
 
 
 	GLfloat angle_x, angle_y, angle_z, angle_inc_x, angle_inc_y, angle_inc_z;
