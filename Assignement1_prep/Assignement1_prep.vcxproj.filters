@@ -60,6 +60,9 @@
     <ClInclude Include="Windmill.h">
       <Filter>Header Files\Objects\Models</Filter>
     </ClInclude>
+    <ClInclude Include="WindmillWing.h">
+      <Filter>Header Files\Objects\Primitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -85,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="Windmill.cpp">
       <Filter>Source Files\Objects\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="WindmillWing.cpp">
+      <Filter>Source Files\Objects\Primitives</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

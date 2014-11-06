@@ -38,4 +38,5 @@ void main()
 
 	
 	outputColor = vec4(fattenuation*(ambient+diffuse+specular)+global_ambient+emissive, 1.0);
+	//outputColor = vec4(1.0,0.0,0.0,1.0);
 }

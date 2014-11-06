@@ -20,7 +20,7 @@ GLuint vao;
 GLuint numCylinderVertices, numLightSourceVertices, numSphereVertices;
 GLuint drawmode;			// Defines drawing mode of sphere as points, lines or filled polygons
 
-GLfloat light_x, light_y, light_z, vx, vy, vz;
+GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc;
 
 GLuint colourmode;	/* Index of a uniform to switch the colour mode in the vertex shader
 					I've included this to show you how to pass in an unsigned integer into
@@ -43,7 +43,7 @@ GLfloat zoom;
 
 void GraphicsManager::init(Glfw_wrap *glfw)
 {
-	aspect_ratio = 1.3333f;
+	aspect_ratio = 1024/500;
 	colourmode = 0; emitmode = 0;
 
 	zoom = 1.0f;
@@ -51,6 +51,8 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 
 	light_x = 1.0; light_y = 1.0; light_z = 1.0;
 	vx = 0; vx = 0, vz = 0.f;
+	wingAngle = 0.0f;
+	wingAngle_inc = 0.0f;
 
 	// Generate index (name) for one vertex array object
 	glGenVertexArrays(1, &vao);
@@ -92,12 +94,17 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	colourmodeID = glGetUniformLocation(program, "colourmode");
 	emitmodeID = glGetUniformLocation(program, "emitmode");
 
-	windmill = new Windmill(5.0, 1.0, 0.73, modelID, normalMatrixID);
+	windmill = new Windmill(10, 4.0, 1.0, 0.73, modelID, normalMatrixID);
 }
 
 
 void display()
 {
+	/* Set the angle for wings */
+	windmill->setWingAngle(wingAngle);
+	wingAngle += wingAngle_inc;
+	wingAngle = std::fmod(wingAngle, 360.0f);
+
 	/* Define the background colour */
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -239,6 +246,7 @@ void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	if (k == 'T') wmbom->angle_inc_z -= 0.05f;
 	if (k == 'Y') wmbom->angle_inc_z += 0.05f;*/
 
+	if (k == 'K') wingAngle_inc += 0.05f;
 
 	if (k == 'Z') zoom += 0.05f;
 	if (k == 'X') zoom -= 0.05f;
