@@ -20,7 +20,7 @@ GLuint vao;
 GLuint numCylinderVertices, numLightSourceVertices, numSphereVertices;
 GLuint drawmode;			// Defines drawing mode of sphere as points, lines or filled polygons
 
-GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc;
+GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc, head_angle;
 
 GLuint colourmode;	/* Index of a uniform to switch the colour mode in the vertex shader
 					I've included this to show you how to pass in an unsigned integer into
@@ -53,6 +53,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	vx = 0; vx = 0, vz = 0.f;
 	wingAngle = 0.0f;
 	wingAngle_inc = 0.0f;
+	head_angle = 0.0f;
 
 	// Generate index (name) for one vertex array object
 	glGenVertexArrays(1, &vao);
@@ -104,6 +105,7 @@ void display()
 	windmill->setWingAngle(wingAngle);
 	wingAngle += wingAngle_inc;
 	wingAngle = std::fmod(wingAngle, 360.0f);
+
 
 	/* Define the background colour */
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -247,6 +249,18 @@ void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	if (k == 'Y') wmbom->angle_inc_z += 0.05f;*/
 
 	if (k == 'K') wingAngle_inc += 0.05f;
+	if (k == 'L')
+	{
+		/* Set the angle for windmill head */
+		head_angle += 2;
+		
+		if (head_angle > 360.0f)
+		{
+			head_angle = std::fmod(head_angle, 360.0);
+		}
+
+		windmill->setHeadAngle(head_angle);
+	}
 
 	if (k == 'Z') zoom += 0.05f;
 	if (k == 'X') zoom -= 0.05f;

@@ -28,6 +28,7 @@ private:
 	GLfloat baseRatio;
 
 	GLfloat wingAngle;
+	GLfloat headAngle;
 
 	GLuint modelID, normalMatrixID;
 
@@ -49,5 +50,6 @@ public:
 	void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std::stack<glm::mat4> &modelScale, std::stack<glm::mat4> &modelRotate);
 	void Windmill::setDrawmode(int drawmode);
 	void Windmill::setWingAngle(GLfloat angle);
+	void Windmill::setHeadAngle(GLfloat angle);
 };
 
