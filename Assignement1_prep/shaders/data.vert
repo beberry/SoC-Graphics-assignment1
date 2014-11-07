@@ -1,6 +1,3 @@
-// Veretx shader: When completed should implement
-// per vertex lighting
-
 // Specify minimum OpenGL version
 #version 400
 
@@ -9,24 +6,16 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec4 colour;
 layout(location = 2) in vec3 normal;
 
-// This is the output vertex colour sent to the rasterizer
-out vec4 fcolour;
-
-
-
 // My out definitions
 out vec3 fnormal, flightdir, fposition;
-out vec4 fdiffusecolour, fambientcolour;
+out vec4 fcolour, fdiffusecolour, fambientcolour;
 out float fattenuation;
 
-
-
-
-// These are the uniforms that are defined in the application
+// Uniforms
 uniform mat4 model, view, projection;
 uniform mat3 normalmatrix;
-uniform uint colourmode, emitmode;
 uniform vec4 lightPos;
+uniform uint emitmode, colourmode;
 
 // Global constants (for this vertex shader)
 vec3 specular_albedo = vec3(1.0, 0.8, 0.6);
@@ -82,7 +71,6 @@ void main()
 	// Calculate the output colour, includung attenuation on the diffuse and specular components
 	// Note that you may want to exclude the ambient form the attenuation factor so objects
 	// are always visible, or include a global ambient
-	//fcolour = vec4(attenuation*(ambient + diffuse + specular) + emissive + global_ambient, 1.0);
 	fcolour = diffuse_albedo;
 	fattenuation = attenuation;
 	

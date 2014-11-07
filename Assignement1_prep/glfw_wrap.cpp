@@ -131,8 +131,8 @@ void Glfw_wrap::setRenderer(void(*func)()) {
 	Original code taken from Ian Martnis lab example.
 */
 void Glfw_wrap::setReshapeCallback(void(*func)(GLFWwindow* window, int w, int h)) {
-	reshape = func;
-	glfwSetFramebufferSizeCallback(window, reshape);
+	resizeWindow = func;
+	glfwSetFramebufferSizeCallback(window, resizeWindow);
 }
 
 

@@ -1,3 +1,11 @@
+/**
+	An object which is responsible for managing the whole application - draws the frames,
+	reacts to callbacks.
+
+	@author Jekabs Stikans
+	@version 1.0, 28/10/2014
+*/
+
 #include "GraphicsManager.h"
 
 
@@ -17,16 +25,12 @@
 GLuint positionBufferObject, positionBufferObjectPyramid, colourObject;
 GLuint program;
 GLuint vao;
-GLuint numCylinderVertices, numLightSourceVertices, numSphereVertices;
-GLuint drawmode;			// Defines drawing mode of sphere as points, lines or filled polygons
 
 GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc, head_angle;
 
-GLuint colourmode;	/* Index of a uniform to switch the colour mode in the vertex shader
-					I've included this to show you how to pass in an unsigned integer into
-					your vertex shader. */
+GLuint colourmode;
 GLuint emitmode;
-
+GLuint drawmode;
 
 
 /* Uniforms*/
@@ -37,20 +41,71 @@ GLuint colorModeID;
 Sphere *lightSourceModel;
 Windmill *windmill;
 
-GLfloat aspect_ratio;		/* Aspect ratio of the window defined in the reshape callback*/
+GLfloat aspect_ratio;
 
 GLfloat zoom;
+int window_w, window_h;
 
+/* Pre-define functions, so that the constructor could be defined at the top of the file. */
+static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods);
+static void resizeWindow(GLFWwindow* window, int w, int h);
+static void display();
+static void errorCallback(int error, const char* description);
+
+/* Constructor for this object. */
+GraphicsManager::GraphicsManager()
+{
+	window_w = 1024;
+	window_h = 500;
+
+	Glfw_wrap *glfw = new Glfw_wrap(window_w, window_h, "Assignement 1 prep, JS");
+
+	if (!ogl_LoadFunctions())
+	{
+		fprintf(stderr, "ogl_LoadFunctions() failed. Exiting\n");
+	}
+	else
+	{
+		this->cmdManager();
+
+		/* Note it you might want to move this call to the wrapper class */
+		glfw->setErrorCallback(errorCallback);
+		glfw->setRenderer(display);
+		glfw->setKeyCallback(keyCallback);
+		glfw->setReshapeCallback(resizeWindow);
+
+		this->init(glfw);
+
+		glfw->eventLoop();
+
+		delete(glfw);
+	}
+}
+
+/* De-constructor for this object. */
+GraphicsManager::~GraphicsManager()
+{
+}
+
+/* Initialization method - could be moved inside the constructor. */
 void GraphicsManager::init(Glfw_wrap *glfw)
 {
-	aspect_ratio = 1024/500;
-	colourmode = 0; emitmode = 0;
+	/* General GLFW config. */
+	aspect_ratio = window_w / window_h;
 
-	zoom = 1.0f;
+	/* Scene variables.*/
+	zoom	   = 1.0f;
+	colourmode = 0;
+	emitmode   = 0;
 
+	light_x = 0.7; 
+	light_y = 0.7;
+	light_z = 1.0;
 
-	light_x = 0.7; light_y = 0.7; light_z = 1.0;
-	vx = 0; vx = 0, vz = 0.f;
+	vx = 0; 
+	vx = 0;
+	vz = 0.f;
+
 	wingAngle = 0.0f;
 	wingAngle_inc = 0.0f;
 	head_angle = 0.0f;
@@ -61,18 +116,11 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	// Create the vertex array object and make it current
 	glBindVertexArray(vao);
 
+	/* Create the light source object. */
 	lightSourceModel = new Sphere(0.5, 0.5, false);
-
-	//numCylinderVertices	   = wmbom->makeVBO(3.0f, 50.0f);
-	numLightSourceVertices = lightSourceModel->makeVBO(20.0f, 30.0f);
-	//numSphereVertices      = sphereModel->makeVBO(20.0f, 30.0f);
+	lightSourceModel->makeVBO(20.0f, 30.0f);
 	
-	/* Create a vertex buffer object to store vertex colours */
-	//glGenBuffers(1, &colourObject);
-	//glBindBuffer(GL_ARRAY_BUFFER, colourObject);
-	//glBufferData(GL_ARRAY_BUFFER, cubeModel->getVertexColoursSize()*sizeof(GLfloat), cubeModel->getVerteColours(), GL_STATIC_DRAW);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+	/* Create shader manager and load the shader programs. */
 	ShaderManager *shaderManager = new ShaderManager();
 
 	try
@@ -88,17 +136,18 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 
 	/* Define uniforms to send to vertex shader */
 	normalMatrixID = glGetUniformLocation(program, "normalmatrix");
-	modelID = glGetUniformLocation(program, "model");
-	viewID = glGetUniformLocation(program, "view");
-	projectionID = glGetUniformLocation(program, "projection");
-	lightPosID = glGetUniformLocation(program, "lightPos");
-	colourmodeID = glGetUniformLocation(program, "colourmode");
-	emitmodeID = glGetUniformLocation(program, "emitmode");
+	modelID		   = glGetUniformLocation(program, "model");
+	viewID		   = glGetUniformLocation(program, "view");
+	projectionID   = glGetUniformLocation(program, "projection");
+	lightPosID	   = glGetUniformLocation(program, "lightPos");
+	colourmodeID   = glGetUniformLocation(program, "colourmode");
+	emitmodeID	   = glGetUniformLocation(program, "emitmode");
 
+	/* Create a windmill object/ */
 	windmill = new Windmill(5, 4.0, 1.0, 0.73, modelID, normalMatrixID);
 }
 
-
+/* The display callback method which redraws the scene. */
 void display()
 {
 	/* Set the angle for wings */
@@ -119,29 +168,25 @@ void display()
 	/* Make the compiled shader program current */
 	glUseProgram(program);
 
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-
+	// Projection matrix.
 	glm::mat4 Projection = glm::perspective(30.0f, aspect_ratio, 0.1f, 100.0f);
 
 	glm::mat4 View = glm::lookAt(
-		glm::vec3(0, 0, 4), // Camera is at (0,0,4), in World Space
-		glm::vec3(0, 0, 0), // and looks at the origin
-		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+		glm::vec3(0, 0, 5),
+		glm::vec3(0, 0, 0),
+		glm::vec3(0, 1, 0)
 		);
-
-
 
 	// Apply rotations to the view position
 	View = glm::scale(View, glm::vec3(zoom, zoom, zoom));
-	View = glm::rotate(View, -vx, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
-	View = glm::rotate(View, -vy, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
+	View = glm::rotate(View, -vx, glm::vec3(1, 0, 0));
+	View = glm::rotate(View, -vy, glm::vec3(0, 1, 0));
 	View = glm::rotate(View, -vz, glm::vec3(0, 0, 1));
 
-	glm::vec4 lightPos = View *  glm::vec4(light_x, light_y, light_z, 1.0);
+	/* Set the light position. */
+	glm::vec4 lightPos = View * glm::vec4(light_x, light_y, light_z, 1.0);
 
-
-
-	/* Define a stack for model transformations. */
+	/* Define a stack objects for model transformations. */
 	glm::mat4 model = glm::mat4(1.0f);
 	std::stack<glm::mat4> modelTranslate;
 	std::stack<glm::mat4> modelScale;
@@ -155,73 +200,65 @@ void display()
 
 	/* Individual Objects */
 
-	/* START Windmill */
+		/* START Windmill */
+			/* THE WORST MISTAKE...
+				Instead of
+
+				glUniform4fv(lightPosID, 1, glm::value_ptr(lightPos));
+
+				I had
+
+				glUniformMatrix4fv(projectionID, 1, GL_FALSE, &Projection[0][0]);
+			*/
+
+			model		    = modelTranslate.top() * modelScale.top() * modelRotate.top();
+			gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
+
+			// Send uniform variables to the shader,
+			glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
+			glUniformMatrix4fv(viewID, 1, GL_FALSE, &View[0][0]);
+			glUniformMatrix4fv(projectionID, 1, GL_FALSE, &Projection[0][0]);
+			glUniform4fv(lightPosID, 1, glm::value_ptr(lightPos));
+			glUniform1ui(colourmodeID, colourmode);
+			glUniform1ui(emitmodeID, emitmode);
+			glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
 
 
-	/* THE WORST MISTAKE...
-		Instead of
-
-		glUniform4fv(lightPosID, 1, glm::value_ptr(lightPos));
-
-		I had
-
-		glUniformMatrix4fv(projectionID, 1, GL_FALSE, &Projection[0][0]);
-	*/
-	model = modelTranslate.top() * modelScale.top() * modelRotate.top();
-	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
-
-	// Send our uniforms variables to the currently bound shader,
-	glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
-	glUniformMatrix4fv(viewID, 1, GL_FALSE, &View[0][0]);
-	glUniformMatrix4fv(projectionID, 1, GL_FALSE, &Projection[0][0]);
-	glUniform4fv(lightPosID, 1, glm::value_ptr(lightPos));
-	glUniform1ui(colourmodeID, colourmode);
-	glUniform1ui(emitmodeID, emitmode);
-	glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
+			/* Draw our Windmill */
+			modelScale.push(glm::scale(modelScale.top(), glm::vec3(0.4, 0.4, 0.4)));
+			windmill->draw(View, modelTranslate, modelScale, modelRotate);
+			modelScale.pop();
+		/* END Windmill */
 
 
-	/* Draw our Windmill */
-	modelScale.push(glm::scale(modelScale.top(), glm::vec3(0.4, 0.4, 0.4)));
-	windmill->draw(View, modelTranslate, modelScale, modelRotate);
-	modelScale.pop();
-	/* END Cylinder */
+		/* START LIGHT Sphere */
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(light_x, light_y, light_z));
+			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+			model = glm::rotate(model, -lightSourceModel->angle_x, glm::vec3(1, 0, 0));
+			model = glm::rotate(model, -lightSourceModel->angle_y, glm::vec3(0, 1, 0));
+			model = glm::rotate(model, -lightSourceModel->angle_z, glm::vec3(0, 0, 1));
 
+			gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
 
-	/* START LIGHT Sphere */
+			/* Send those uniforms which have changed. */
+			glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
+			glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
 
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(light_x, light_y, light_z));
-	model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));//scale equally in all axis
-	model = glm::rotate(model, -lightSourceModel->angle_x, glm::vec3(1, 0, 0)); //rotating in clockwise direction around x-axis
-	model = glm::rotate(model, -lightSourceModel->angle_y, glm::vec3(0, 1, 0)); //rotating in clockwise direction around y-axis
-	model = glm::rotate(model, -lightSourceModel->angle_z, glm::vec3(0, 0, 1)); //rotating in clockwise direction around z-axis
+			/* Draw light object */
+			emitmode = 1;
+			glUniform1ui(emitmodeID, emitmode);
+			lightSourceModel->draw();
+			emitmode = 0;
 
-	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
-
-	glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
-	glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
-
-	/* Draw sphere */
-	emitmode = 1;
-	glUniform1ui(emitmodeID, emitmode);
-	lightSourceModel->draw();
-	emitmode = 0;
-
-	/* EnD Sphere */
-
+		/* End LIGHT Sphere */
 
 	glDisableVertexAttribArray(0);
 	glUseProgram(0);
-
-
-	//wmbom->angle_x += wmbom->angle_inc_x;
-	//wmbom->angle_y += wmbom->angle_inc_y;
-	//wmbom->angle_z += wmbom->angle_inc_z;
-
 }
 
-/* Called whenever the window is resized. The new window size is given, in pixels. */
-static void reshape(GLFWwindow* window, int w, int h)
+/* Window resize callback. */
+static void resizeWindow(GLFWwindow* window, int w, int h)
 {
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
 	aspect_ratio = ((float)w / 640.f*4.f) / ((float)h / 480.f*3.f);
@@ -234,19 +271,11 @@ static void errorCallback(int error, const char* description)
 }
 
 /* change view angle, exit upon ESC */
-void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
+static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 {
-	//if (action != GLFW_PRESS) return;
-
 	if (k == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	/*if (k == 'Q') wmbom->angle_inc_x -= 0.05f;
-	if (k == 'W') wmbom->angle_inc_x += 0.05f;
-	if (k == 'E') wmbom->angle_inc_y -= 0.05f;
-	if (k == 'R') wmbom->angle_inc_y += 0.05f;
-	if (k == 'T') wmbom->angle_inc_z -= 0.05f;
-	if (k == 'Y') wmbom->angle_inc_z += 0.05f;*/
 
 	if (k == 'K') wingAngle_inc += 0.05f;
 	if (k == 'L')
@@ -299,33 +328,8 @@ void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 
 }
 
-
-GraphicsManager::GraphicsManager()
+void GraphicsManager::cmdManager()
 {
-	Glfw_wrap *glfw = new Glfw_wrap(1024, 500, "Assignement 1 prep");
-
-	if (!ogl_LoadFunctions())
-	{
-		fprintf(stderr, "ogl_LoadFunctions() failed. Exiting\n");
-	}
-	else
-	{
-		/* Note it you might want to move this call to the wrapper class */
-		glfw->setErrorCallback(errorCallback);
-
-		glfw->setRenderer(display);
-		glfw->setKeyCallback(keyCallback);
-		glfw->setReshapeCallback(reshape);
-
-		this->init(glfw);
-
-		glfw->eventLoop();
-
-		delete(glfw);
-	}
-}
-
-
-GraphicsManager::~GraphicsManager()
-{
+	std::cout << "Z - zoom in." << std::endl;
+	std::cout << "O - zoom out." << std::endl;
 }

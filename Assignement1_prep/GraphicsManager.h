@@ -1,3 +1,10 @@
+/**
+	An object which is responsible for managing the whole application - draws the frames,
+	reacts to callbacks.
+
+	@author Jekabs Stikans
+	@version 1.0, 28/10/2014
+*/
 #pragma once
 
 /* Inlcude GL_Load and GLFW */
@@ -17,6 +24,7 @@ class GraphicsManager
 {
 private:
 	void GraphicsManager::init(Glfw_wrap *glw);
+	void GraphicsManager::cmdManager();
 
 
 public:

@@ -1,3 +1,10 @@
+/**
+	Windmill object whic manages different windmill parts, their construction,
+	transformations and other related actions.
+
+	@author Jekabs Stikans
+	@version 1.0, 30/10/2014
+*/
 #pragma once
 
 /* OpenGL libs */
@@ -9,10 +16,12 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
+/* Some STL includes. */
 #include <stack>
 #include <vector>
 #include <cmath> 
 
+/* Custom objects. */
 #include "Cylinder.h"
 #include "Sphere.h"
 #include "WindmillWing.h"
@@ -31,8 +40,6 @@ private:
 	GLfloat headAngle;
 
 	GLuint modelID, normalMatrixID;
-
-
 
 	GLuint wingCount;
 	Cylinder *baseModel;

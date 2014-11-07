@@ -1,9 +1,21 @@
+/**
+	Shader program loader. The origianal code was provided by Ian Martin. Extracted into
+	a class	and modified by me.
+
+	@author Ian Martin, Modified by Jekabs Stikanss
+	@version 1.0, 29/10/2014
+*/
 #pragma once
 
-#include <string>
-
+/* OpenGL libs */
 #include <glload/gl_4_0.h>
 #include <glload/gl_load.h>
+
+/* Some STL includes. */
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <vector>
 
 class ShaderManager
 {

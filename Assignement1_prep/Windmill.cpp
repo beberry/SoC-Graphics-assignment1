@@ -1,6 +1,13 @@
+/**
+	Windmill object whic manages different windmill parts, their construction,
+	transformations and other related actions.
+
+	@author Jekabs Stikans
+	@version 1.0, 30/10/2014
+*/
 #include "Windmill.h"
 
-
+/* The constructor method which initializes this object. */
 Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLuint modelID, GLuint normalMatrixID)
 {
 	this->wingCount   = wingCount;
@@ -21,8 +28,6 @@ Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloa
 	this->createWings();
 
 	this->wings;
-	int b = 0;
-	
 }
 
 Windmill::~Windmill()
@@ -49,7 +54,8 @@ void Windmill::createWings()
 	for (int i = 0; i < this->wingCount; i++)
 	{
 		WindmillWing *tmpWing = new WindmillWing(1.0f, 0.25f, 0.07f);
-		tmpWing->makeVBO(0, 0);
+		tmpWing->makeVBO();
+
 		this->wings.push_back(tmpWing);
 	}
 }
@@ -61,9 +67,9 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 	glm::mat3 gl_NormalMatrix = glm::mat3(1.0f);
 
 	/* Do some transformations with the roof of the windmill. */
-	//modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(0.0, this->topHeight/2, 0)));
 	modelRotate.push(glm::rotate(modelRotate.top(), this->headAngle, glm::vec3(0, 1, 0)));
 	model = modelTranslate.top() * modelScale.top() * modelRotate.top();
+	
 	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
 
 	glUniformMatrix4fv(this->modelID, 1, GL_FALSE, &model[0][0]);
@@ -72,16 +78,15 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 	this->topModel->draw();
 	modelRotate.pop();
 
-	//modelTranslate.pop();
-
 	/* Do some transformations with the base of the windmill. */
-	//modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(0.0, -1.0, 0)));
 	model = modelTranslate.top() * modelScale.top() * modelRotate.top();
+
 	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
+
 	glUniformMatrix4fv(this->modelID, 1, GL_FALSE, &model[0][0]);
 	glUniformMatrix3fv(this->normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
+
 	this->baseModel->draw();
-	//modelTranslate.pop();
 
 	/* Do some transformations with the wings of the windmill. */
 	GLfloat wingAngle = 360.f / this->wingCount;
@@ -93,6 +98,7 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 	glm::mat4 fullRotation = glm::mat4(1.0f);
 	fullRotation = glm::rotate(fullRotation, this->headAngle, glm::vec3(0, 1, 0));
 
+	/* Apply all transformations to each wing of the windmill. */
 	for (int i = 0; i < this->wings.size(); i++)
 	{
 		float currentAngle = (float)i*wingAngle+this->wingAngle;
@@ -141,16 +147,16 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 		glUniformMatrix4fv(this->modelID, 1, GL_FALSE, &model[0][0]);
 		glUniformMatrix4fv(this->normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
+
 		WindmillWing *wmw = this->wings.at(i);
 		wmw->draw();
 
 		modelTranslate.pop();
 		modelRotate.pop();
 	}
-
-	
 }
 
+/* Set the drawmode for this object and its child elements. */
 void Windmill::setDrawmode(int drawmode)
 {
 	this->baseModel->setDrawmode(drawmode);
@@ -162,11 +168,13 @@ void Windmill::setDrawmode(int drawmode)
 	}
 }
 
+/* Set the angle of windmill wings. */
 void Windmill::setWingAngle(GLfloat angle)
 {
 	this->wingAngle = angle;
 }
 
+/* Set the angle around Y axis for the "head/hat" of the windmill and the windmill wings.*/
 void Windmill::setHeadAngle(GLfloat angle)
 {
 	this->headAngle = angle;

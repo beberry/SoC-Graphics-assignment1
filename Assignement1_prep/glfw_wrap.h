@@ -18,7 +18,7 @@ private:
 
 	void(*errorCallback)(int error, const char* description);
 	void(*renderer)();
-	void(*reshape)(GLFWwindow* window, int w, int h);
+	void(*resizeWindow)(GLFWwindow* window, int w, int h);
 	void(*keyCallBack)(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 public:

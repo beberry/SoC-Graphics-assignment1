@@ -1,7 +1,17 @@
+/**
+	A primitive graphics object - sphere.
+	Some code taken from lab4 example. The code was extracted into its own
+	class and new functionality was added.
+
+	It is possible to define whether the sphere needs to be full / half-sphere.
+	It is possible to define the radiuss of the sphere object.
+
+	@author Ian Martin, Modified by Jekabs Stikanss
+	@version 1.0, 03/11/2014
+*/
 #include "Sphere.h"
 
 /* The original code for this object has been taken from Ian Martins lab4 example, modified by Jekabs Stikans */
-
 Sphere::Sphere(GLfloat maxWidth, GLfloat maxHeight, bool halfSphere)
 {
 	this->maxWidth = maxWidth;
@@ -211,8 +221,7 @@ void Sphere::draw()
 		glDrawElements(GL_TRIANGLE_FAN, numlongs + 2, GL_UNSIGNED_INT, (GLvoid*)(lat_offset_current));
 	}
 }
-
-
+/* Set the drawmode for this object. */
 void Sphere::setDrawmode(int drawmode)
 {
 	this->drawmode = drawmode;

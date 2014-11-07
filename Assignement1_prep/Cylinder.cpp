@@ -1,3 +1,10 @@
+/**
+A primitive graphics object - cylinder.
+The variables can be modified, so that the object becomes more complex - cone, cylinder which changes it's width.
+
+@author Jekabs Stikans
+@version 1.0, 01/11/2014
+*/
 #include "Cylinder.h"
 
 /* Inlcude some standard headers */
@@ -6,9 +13,9 @@
 /* Construction */
 Cylinder::Cylinder(GLfloat height, GLfloat maxTopRadius)
 {
-	this->radiussCoeff = 1.12;
+	this->radiussCoeff	 = 1.12;
 	this->height		 = height;
-	this->maxTopRadius = maxTopRadius;
+	this->maxTopRadius	 = maxTopRadius;
 	this->drawmode	     = 3;
 	this->vertexCount    = 0;
 }
@@ -165,11 +172,10 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 		}
 	}
 	
-	// Normalize the normals
+	// Normalize the surface normals
 	for (int i = 0; i < this->vertexCount; i++)
 	{
 		this->vertexNormals[i] = glm::normalize(this->vertexNormals[i]);
-		//std::cout << "x" << this->vertexNormals[i].x << " y" << this->vertexNormals[i].y << " z" << this->vertexNormals[i].z << std::endl;
 	}
 
 
@@ -329,9 +335,8 @@ void Cylinder::draw()
 	}
 }
 
+/* Set the draw mode for this object. */
 void Cylinder::setDrawmode(int drawmode)
 {
 	this->drawmode = drawmode;
 }
-
-

@@ -1,13 +1,13 @@
-/* 
-	Some methods have been borrowed from I.Martins lab examples.
+/**
+	Shader program loader. The origianal code was provided by Ian Martin. Extracted into
+	a class	and modified by me.
+
+	@author Ian Martin, Modified by Jekabs Stikanss
+	@version 1.0, 29/10/2014
 */
 
 
 #include "shaderManager.h"
-
-#include <iostream>
-#include <fstream>
-#include <vector>
 
 ShaderManager::ShaderManager()
 {
@@ -21,7 +21,7 @@ ShaderManager::~ShaderManager()
 
 /*
 	Build shaders from strings containing shader source code
-	Original code taken from Ian Martnis lab example.
+	Original code taken from Ian Martins lab example.
 */
 GLuint ShaderManager::BuildShader(GLenum eShaderType, const std::string &shaderText)
 {

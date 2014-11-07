@@ -1,3 +1,10 @@
+/**
+	A primitive graphics object - cylinder.
+	The variables can be modified, so that the object becomes more complex - cone, cylinder which changes it's width.
+
+	@author Jekabs Stikans
+	@version 1.0, 01/11/2014
+*/
 #pragma once
 
 /* OpenGL libs */

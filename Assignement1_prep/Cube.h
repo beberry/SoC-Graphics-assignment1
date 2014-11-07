@@ -1,3 +1,12 @@
+/**
+	A primitive graphics object - cube.
+	Some code taken from lab4 example. The code was extracted into its own
+	class and new functionality was added.
+
+	@author Ian Martin, Modified by Jekabs Stikanss
+	@version 1.0, 03/11/2014
+*/
+
 #pragma once
 
 /* OpenGL libs */
@@ -9,8 +18,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
+/* Some STL includes. */
 #include <vector>
-
 
 class Cube
 {
