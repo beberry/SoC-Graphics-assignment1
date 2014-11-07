@@ -104,13 +104,18 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 	{
 		float currentAngle = (float)i*wingAngle+this->wingAngle;
 
+		if (currentAngle < 0)
+		{
+			currentAngle += 360.0f;
+		}
+
 		/* Calculate the translation values */
 		GLfloat activeAngle = std::fmod(std::abs(currentAngle), 360.0);
 		GLfloat localAngle = std::fmod(activeAngle, 90.0);
 
 		GLfloat localAngle2 = 0.0f;
 
-		int quadrant = activeAngle/90.0+1; /* Calculate in which quadrant the figure is ( I, II, III, IV ) */
+		int quadrant = abs(activeAngle/90.0)+1; /* Calculate in which quadrant the figure is ( I, II, III, IV ) */
 
 		GLfloat radiuss = 0.3f;
 		GLfloat xMove = 0.0f;
