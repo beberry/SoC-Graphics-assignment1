@@ -153,7 +153,11 @@ void display()
 	/* Set the angle for wings */
 	windmill->setWingAngle(wingAngle);
 	wingAngle += wingAngle_inc;
-	wingAngle = std::fmod(wingAngle, 360.0f);
+
+	if (wingAngle > 360.0f || wingAngle < -360.0f)
+	{
+		wingAngle = std::fmod(wingAngle, 360.0f);
+	}
 
 
 	/* Define the background colour */
@@ -275,44 +279,31 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 {
 	if (k == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
-
-
+	
+	/* Valid input START*/
 	if (k == 'K') wingAngle_inc += 0.05f;
-	if (k == 'L')
+	if (k == 'L') wingAngle_inc -= 0.05f;
+
+
+	if (k == 'O' || k == 'P')
 	{
 		/* Set the angle for windmill head */
-		head_angle += 2;
-		
-		if (head_angle > 360.0f)
+
+		if (k == 'O')
+		{
+			head_angle += 2;
+		}
+		else
+		{
+			head_angle -= 2;
+		}
+
+		if (head_angle > 360.0f || head_angle < -360.0f)
 		{
 			head_angle = std::fmod(head_angle, 360.0);
 		}
 
 		windmill->setHeadAngle(head_angle);
-	}
-
-	if (k == 'Z') zoom += 0.05f;
-	if (k == 'X') zoom -= 0.05f;
-
-
-	if (k == '1') light_x -= 0.05f;
-	if (k == '2') light_x += 0.05f;
-	if (k == '3') light_y -= 0.05f;
-	if (k == '4') light_y += 0.05f;
-	if (k == '5') light_z -= 0.05f;
-	if (k == '6') light_z += 0.05f;
-
-	if (k == '7') vx -= 1.f;
-	if (k == '8') vx += 1.f;
-	if (k == '9') vy -= 1.f;
-	if (k == '0') vy += 1.f;
-	if (k == 'O') vz -= 1.f;
-	if (k == 'P') vz += 1.f;
-
-	if (k == 'M' && action != GLFW_PRESS)
-	{
-		colourmode = !colourmode;
-		std::cout << "colourmode=" << colourmode << std::endl;
 	}
 
 	/* Cycle between drawing vertices, mesh and filled polygons */
@@ -326,10 +317,50 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	}
 
 
+	if (k == '1') light_x -= 0.05f;
+	if (k == '2') light_x += 0.05f;
+	if (k == '3') light_y += 0.05f;
+	if (k == '4') light_y -= 0.05f;
+	if (k == '5') light_z -= 0.05f;
+
+	if (k == '6') light_z += 0.05f;
+	/* Valid input END */
+
+	
+	if (k == 'Z') zoom += 0.05f;
+	if (k == 'X') zoom -= 0.05f;
+
+
+	if (k == '7') vx -= 1.f;
+	if (k == '8') vx += 1.f;
+	if (k == '9') vy -= 1.f;
+	if (k == '0') vy += 1.f;
+	if (k == 'U') vz -= 1.f;
+	if (k == 'I') vz += 1.f;
+
+	if (k == 'M' && action != GLFW_PRESS)
+	{
+		colourmode = !colourmode;
+		std::cout << "colourmode=" << colourmode << std::endl;
+	}
 }
 
 void GraphicsManager::cmdManager()
 {
-	std::cout << "Z - zoom in." << std::endl;
-	std::cout << "O - zoom out." << std::endl;
+	std::cout << "\tZ - zoom in." << std::endl;
+	std::cout << "\tX - zoom out.\n" << std::endl;
+	std::cout << "\tK - Increase counterclockwise roatation speed for the windmill sails." << std::endl;
+	std::cout << "\tL - Increase clockwise roatation speed for the windmill sails.\n" << std::endl;
+	std::cout << "\tO - Rotate the windmill head (roof and sails) counterclockwise." << std::endl;
+	std::cout << "\tP - Rotate the windmill head (roof and sails) clockwise." << std::endl;
+	std::cout << "\n\n-----------------Lighting---------------------------------" << std::endl;
+	std::cout << "\t1 - Move light source to the left on X axis." << std::endl;
+	std::cout << "\t2 - Move light source to the right on X axis." << std::endl;
+	std::cout << "\t3 - Move light source up on Y axis." << std::endl;
+	std::cout << "\t4 - Move light source downd on Y axis." << std::endl;
+	std::cout << "\t5 - Move light source further away on Z axis." << std::endl;
+	std::cout << "\t6 - Move light source closer on Z axis" << std::endl;
+	std::cout << "\n\n-----------------Other------------------------------------" << std::endl;
+	std::cout << "N - Toggle between draw modes." << std::endl;
+	std::cout << std::endl;
 }
