@@ -21,8 +21,6 @@ void main()
 {
 	vec3 emissive = vec3(0);
 
-	// Calculate the atenuation..
-
 	// Ambient lighting calculation;
 	vec3 ambient = fcolour.xyz *0.2;
 
