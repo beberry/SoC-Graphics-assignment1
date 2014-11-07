@@ -86,7 +86,9 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="shaderManager.h" />
     <ClInclude Include="Cylinder.h" />
+    <ClInclude Include="SOIL.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Windmill.h" />
     <ClInclude Include="WindmillWing.h" />
   </ItemGroup>
@@ -98,12 +100,16 @@
     <ClCompile Include="shaderManager.cpp" />
     <ClCompile Include="Cylinder.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Windmill.cpp" />
     <ClCompile Include="WindmillWing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\data.frag" />
     <None Include="shaders\data.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\..\Desktop\index.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

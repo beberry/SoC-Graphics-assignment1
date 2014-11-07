@@ -94,7 +94,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	aspect_ratio = window_w / window_h;
 
 	/* Scene variables.*/
-	zoom	   = 1.0f;
+	zoom	   = 5.0f;
 	colourmode = 0;
 	emitmode   = 0;
 
@@ -159,6 +159,8 @@ void display()
 		wingAngle = std::fmod(wingAngle, 360.0f);
 	}
 
+	/* Anti aliasing */
+	glEnable(GL_MULTISAMPLE);
 
 	/* Define the background colour */
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -176,13 +178,13 @@ void display()
 	glm::mat4 Projection = glm::perspective(30.0f, aspect_ratio, 0.1f, 100.0f);
 
 	glm::mat4 View = glm::lookAt(
-		glm::vec3(0, 0, 5),
+		glm::vec3(0, 0, zoom),
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 1, 0)
 		);
 
 	// Apply rotations to the view position
-	View = glm::scale(View, glm::vec3(zoom, zoom, zoom));
+	//View = glm::scale(View, glm::vec3(zoom, zoom, zoom));
 	View = glm::rotate(View, -vx, glm::vec3(1, 0, 0));
 	View = glm::rotate(View, -vy, glm::vec3(0, 1, 0));
 	View = glm::rotate(View, -vz, glm::vec3(0, 0, 1));
@@ -327,8 +329,8 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	/* Valid input END */
 
 	
-	if (k == 'Z') zoom += 0.05f;
-	if (k == 'X') zoom -= 0.05f;
+	if (k == 'Z') zoom += 0.07f;
+	if (k == 'X') zoom -= 0.07f;
 
 
 	if (k == '7') vx -= 1.f;
@@ -347,6 +349,7 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 
 void GraphicsManager::cmdManager()
 {
+	std::cout << "\n\n-----------------General-----------------------------------" << std::endl;
 	std::cout << "\tZ - zoom in." << std::endl;
 	std::cout << "\tX - zoom out.\n" << std::endl;
 	std::cout << "\tK - Increase counterclockwise roatation speed for the windmill sails." << std::endl;
