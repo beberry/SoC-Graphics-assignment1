@@ -107,7 +107,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	vz = 0.f;
 
 	wingAngle = 0.0f;
-	wingAngle_inc = 0.05f;
+	wingAngle_inc = 0.1f;
 	head_angle = 0.0f;
 
 	// Generate index (name) for one vertex array object

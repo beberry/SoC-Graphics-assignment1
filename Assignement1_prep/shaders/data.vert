@@ -7,8 +7,8 @@ layout(location = 1) in vec4 colour;
 layout(location = 2) in vec3 normal;
 
 // My out definitions
-out vec3 fnormal, flightdir, fposition;
-out vec4 fcolour, fdiffusecolour, fambientcolour;
+out vec3 fnormal, flightdir;
+out vec4 fcolour, fdiffusecolour, fambientcolour, fposition;
 out float fattenuation;
 
 // Uniforms
@@ -33,6 +33,8 @@ void main()
 
 	//vec3 ambient = diffuse_albedo.xyz *0.2;
 
+
+
 	// Define our vectors to calculate diffuse and specular lighting
 	mat4 mv_matrix = view * model;		// Calculate the model-view transformation
 	vec4 P = mv_matrix * position_h;	// Modify the vertex position (x, y, z, w) by the model-view transformation
@@ -44,7 +46,7 @@ void main()
 
 	// Pass to fragment shader.
 	fnormal   = N;
-	fposition = light_pos3;
+	fposition = P;
 	flightdir = L;
 
 

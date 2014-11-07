@@ -5,8 +5,8 @@
 
 in vec4 fcolour;
 
-in vec3 fnormal, flightdir, fposition;
-in vec4 fdiffusecolour, fambientcolour;
+in vec3 fnormal, flightdir;
+in vec4 fdiffusecolour, fambientcolour, fposition;
 in float fattenuation;
 
 vec3 global_ambient = vec3(0.05, 0.05, 0.05);
