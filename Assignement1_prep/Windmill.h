@@ -35,6 +35,7 @@ private:
 	GLfloat topHeight;
 	GLfloat topMaxWidth;
 	GLfloat baseRatio;
+	GLfloat baseRadiussCoeff;
 
 	GLfloat wingAngle;
 	GLfloat headAngle;
@@ -48,7 +49,7 @@ private:
 
 
 public:
-	Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLuint modelID, GLuint normalMatrixID);
+	Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLfloat baseRadiussCoeff, GLuint modelID, GLuint normalMatrixID);
 	~Windmill();
 
 	void Windmill::createTop();

@@ -11,9 +11,9 @@ The variables can be modified, so that the object becomes more complex - cone, c
 #include <iostream>
 
 /* Construction */
-Cylinder::Cylinder(GLfloat height, GLfloat maxTopRadius)
+Cylinder::Cylinder(GLfloat height, GLfloat maxTopRadius, GLfloat radiussCoeff)
 {
-	this->radiussCoeff	 = 1.12;
+	this->radiussCoeff   = radiussCoeff;
 	this->height		 = height;
 	this->maxTopRadius	 = maxTopRadius;
 	this->drawmode	     = 3;
@@ -36,13 +36,13 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	/* Calculate the number of vertices required in hemisphere */
 	this->vertexCount = (numlats) * (numlongs);
 
-	this->vertexPositions = new GLfloat[this->vertexCount * 3];
+	this->vertexPositions.resize(this->vertexCount * 3);
 	this->vertexColours   = new GLfloat[this->vertexCount * 4];
 
 	makeUnitObject(numlats, numlongs);
 
 
-	this->vertexNormals = new glm::vec3[this->vertexCount];
+	this->vertexNormals.resize(this->vertexCount);
 
 
 
@@ -57,9 +57,9 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	
 	int ind = 0;
 	
-	for (int lat = 0; lat < numlats-1; lat++)
+	for (int lat = 0; lat < numlats-1; ++lat)
 	{
-		for (int lon = 0; lon < numlongs; lon++)
+		for (int lon = 0; lon < numlongs; ++lon)
 		{
 			int p0Index = 0;
 			int p1Index = 0;
@@ -156,8 +156,8 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 			if (ind % ((int)numlongs + 1) == 0)
 			{
 				// First triangle in this strip.
-				this->vertexNormals[ind + (int)numlongs * 2 - 1] += crossP;
-				this->vertexNormals[ind + (int)numlongs - 1] += crossP;
+				this->vertexNormals[ind + (int)numlongs + 1] += crossP;
+				this->vertexNormals[ind + (int)numlongs] += crossP;
 			}
 
 			if ((ind + 1) % (int)numlongs == 0)
@@ -191,13 +191,13 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	/* Generate the vertex buffer object */
 	glGenBuffers(1, &this->bufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, this->bufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->vertexCount * 3, this->vertexPositions, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->vertexPositions.size()*sizeof(GLfloat), this->vertexPositions.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	/* Store the normals in a buffer object */
 	glGenBuffers(1, &this->normalsBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, this->normalsBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*this->vertexCount, this->vertexNormals, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->vertexNormals.size()*sizeof(glm::vec3), this->vertexNormals.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
@@ -232,13 +232,13 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 
 		start += numlongs;
 	}
-
+	
 	// Generate a buffer for the indices
 	glGenBuffers(1, &this->elementBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numindices * sizeof(GLuint), pindices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+	
 
 	delete pindices;
 	return this->vertexCount;

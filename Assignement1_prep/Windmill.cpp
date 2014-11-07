@@ -8,15 +8,16 @@
 #include "Windmill.h"
 
 /* The constructor method which initializes this object. */
-Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLuint modelID, GLuint normalMatrixID)
+Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLfloat baseRadiussCoeff, GLuint modelID, GLuint normalMatrixID)
 {
-	this->wingCount   = wingCount;
-	this->baseRatio   = baseRatio;
-	this->height	  = height;
-	this->baseHeight  = this->height * this->baseRatio;
-	this->topHeight   = this->height - this->baseHeight;
-	this->topMaxWidth = topMaxWidth;
-	this->wingAngle   = 0.0f;
+	this->wingCount		   = wingCount;
+	this->baseRatio		   = baseRatio;
+	this->height		   = height;
+	this->baseHeight	   = this->height * this->baseRatio;
+	this->topHeight		   = this->height - this->baseHeight;
+	this->topMaxWidth	   = topMaxWidth;
+	this->wingAngle		   = 0.0f;
+	this->baseRadiussCoeff = baseRadiussCoeff;
 
 	/* Prepare for setting this models uniforms */
 	this->modelID		 = modelID;
@@ -44,8 +45,8 @@ void Windmill::createTop()
 /* Create the base object for the windmill. */
 void Windmill::createBase()
 {
-	this->baseModel = new Cylinder(this->baseHeight, this->topMaxWidth*0.90);
-	this->baseModel->makeVBO(3.0f, 30.0f);
+	this->baseModel = new Cylinder(this->baseHeight, this->topMaxWidth*0.85, this->baseRadiussCoeff);
+	this->baseModel->makeVBO(5.0f, 30.0f);
 }
 
 /* Create the wings for the windmill. */
@@ -139,7 +140,7 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 		}
 
 
-		modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(xMove, yMove, 0.4)));
+		modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(xMove, yMove+0.15, 0.46)));
 		modelRotate.push(glm::rotate(modelRotate.top(), currentAngle, glm::vec3(0, 0, 1)));
 		model = fullRotation*modelTranslate.top() * modelScale.top() * modelRotate.top();
 

@@ -16,13 +16,16 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
+/* Some STL includes. */
+#include <vector>
+
 
 class Cylinder
 {
 private:
 	/* Common for graphics objects. */
-	GLfloat *vertexPositions;
-	glm::vec3 *vertexNormals;
+	std::vector<GLfloat> vertexPositions;
+	std::vector<glm::vec3> vertexNormals;
 	GLfloat *vertexColours;
 
 	GLuint bufferObject, normalsBufferObject, elementBuffer;
@@ -41,7 +44,7 @@ private:
 	
 public:
 	// Common for graphics objects.
-	Cylinder(GLfloat height, GLfloat maxBottomRadius);
+	Cylinder(GLfloat height, GLfloat maxBottomRadius, GLfloat radiussCoeff);
 	~Cylinder();
 
 	GLfloat* Cylinder::getVertexPositions();

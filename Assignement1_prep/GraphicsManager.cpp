@@ -107,7 +107,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	vz = 0.f;
 
 	wingAngle = 0.0f;
-	wingAngle_inc = 0.0f;
+	wingAngle_inc = 0.05f;
 	head_angle = 0.0f;
 
 	// Generate index (name) for one vertex array object
@@ -144,7 +144,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	emitmodeID	   = glGetUniformLocation(program, "emitmode");
 
 	/* Create a windmill object/ */
-	windmill = new Windmill(5, 4.0, 1.0, 0.73, modelID, normalMatrixID);
+	windmill = new Windmill(5, 4.0, 1.0, 0.73, 1.1, modelID, normalMatrixID);
 }
 
 /* The display callback method which redraws the scene. */
