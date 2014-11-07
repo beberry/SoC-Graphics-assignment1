@@ -8,7 +8,7 @@
 #include "Windmill.h"
 
 /* The constructor method which initializes this object. */
-Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLfloat baseRadiussCoeff, GLuint modelID, GLuint normalMatrixID)
+Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLfloat baseRadiussCoeff, GLuint modelID, GLuint normalMatrixID, GLuint textureID)
 {
 	this->wingCount		   = wingCount;
 	this->baseRatio		   = baseRatio;
@@ -22,6 +22,7 @@ Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloa
 	/* Prepare for setting this models uniforms */
 	this->modelID		 = modelID;
 	this->normalMatrixID = normalMatrixID;
+	this->textureID		 = textureID;
 
 	/* Construct the object. */
 	this->createTop();
@@ -45,8 +46,8 @@ void Windmill::createTop()
 /* Create the base object for the windmill. */
 void Windmill::createBase()
 {
-	this->baseModel = new Cylinder(this->baseHeight, this->topMaxWidth*0.85, this->baseRadiussCoeff);
-	this->baseModel->makeVBO(5.0f, 30.0f);
+	this->baseModel = new Cylinder(this->baseHeight, this->topMaxWidth*0.85, this->baseRadiussCoeff, this->textureID);
+	this->baseModel->makeVBO(5.0f, 60.0f);
 }
 
 /* Create the wings for the windmill. */

@@ -11,13 +11,45 @@ The variables can be modified, so that the object becomes more complex - cone, c
 #include <iostream>
 
 /* Construction */
-Cylinder::Cylinder(GLfloat height, GLfloat maxTopRadius, GLfloat radiussCoeff)
+Cylinder::Cylinder(GLfloat height, GLfloat maxTopRadius, GLfloat radiussCoeff, GLuint textureID)
 {
 	this->radiussCoeff   = radiussCoeff;
 	this->height		 = height;
 	this->maxTopRadius	 = maxTopRadius;
 	this->drawmode	     = 3;
 	this->vertexCount    = 0;
+
+	this->textureID = textureID;
+
+	try
+	{
+		/* Not actually needed if using one texture at a time */
+		glActiveTexture(GL_TEXTURE0);
+
+		/* load an image file directly as a new OpenGL texture */
+		this->texID = SOIL_load_OGL_texture("textures/index3.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+			SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+
+		/* check for an error during the load process */
+		if (this->texID == 0)
+		{
+			printf("TexID SOIL loading error: '%s'\n", SOIL_last_result());
+		}
+	}
+	catch (std::exception &e)
+	{
+		printf("\nImage file loading failed.");
+	}
+
+	/* Define the texture behaviour parameters */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+
+	// Can't get this to work
+	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 /* Destructor */
@@ -200,6 +232,41 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	glBufferData(GL_ARRAY_BUFFER, this->vertexNormals.size()*sizeof(glm::vec3), this->vertexNormals.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	GLfloat texcoords[] = {
+		0.0f, 0.0f,
+		5.0f, 0.0f,
+		5.0f, 5.0f,
+		0.0f, 5.0f
+	};
+
+	/* Generate texture coordinats */
+	std::vector<GLfloat> texcoords1;
+
+	GLfloat latstep = 1.0 / numlats;
+	GLfloat longstep = 1.0 / numlongs;
+
+	for (int i = 0; i < numlats; i++)
+	{
+		for (int x = 0; x < numlongs; x++)
+		{
+			texcoords1.push_back(x*longstep);
+			texcoords1.push_back(i*latstep);
+
+			/*if (x % (int)(numlongs - 1) == 0)
+			{
+				texcoords1.push_back(x*longstep);
+				texcoords1.push_back(i+1)*latstep);
+			}*/
+
+		}
+	}
+
+	/* Generate the texture coordinate buffer */
+	glGenBuffers(1, &this->textureBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->textureBuffer);
+	glBufferData(GL_ARRAY_BUFFER, texcoords1.size()*sizeof(GLfloat), texcoords1.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 
 	/* Store the colours in a buffer object */
 	//glGenBuffers(1, &this->normals);
@@ -300,6 +367,11 @@ void Cylinder::draw()
 	glBindBuffer(GL_ARRAY_BUFFER, this->normalsBufferObject);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
+	/* BInd the texture data */
+	glEnableVertexAttribArray(3);
+	glBindBuffer(GL_ARRAY_BUFFER, this->textureBuffer);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
 	/* Bind the sphere colours */
 	//glBindBuffer(GL_ARRAY_BUFFER, sphereColours);
 	//glEnableVertexAttribArray(1);
@@ -330,6 +402,7 @@ void Cylinder::draw()
 
 		for (i = 0; i < numlats; i++)
 		{
+			glBindTexture(GL_TEXTURE_2D, this->textureID);
 			glDrawElements(GL_TRIANGLE_STRIP, this->numlongs * 2 + 2, GL_UNSIGNED_INT, (GLvoid*)(lat_offset*i));
 		}
 	}

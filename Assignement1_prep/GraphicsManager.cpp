@@ -34,7 +34,7 @@ GLuint drawmode;
 
 
 /* Uniforms*/
-GLuint modelID, viewID, projectionID, normalMatrixID, lightPosID, colourmodeID, emitmodeID;
+GLuint modelID, viewID, projectionID, normalMatrixID, lightPosID, colourmodeID, emitmodeID, textureID;
 GLuint colorModeID;
 
 
@@ -142,9 +142,10 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	lightPosID	   = glGetUniformLocation(program, "lightPos");
 	colourmodeID   = glGetUniformLocation(program, "colourmode");
 	emitmodeID	   = glGetUniformLocation(program, "emitmode");
+	textureID	   = glGetUniformLocation(program, "tex1");
 
 	/* Create a windmill object/ */
-	windmill = new Windmill(5, 4.0, 1.0, 0.73, 1.1, modelID, normalMatrixID);
+	windmill = new Windmill(5, 4.0, 1.0, 0.73, 1.1, modelID, normalMatrixID, textureID);
 }
 
 /* The display callback method which redraws the scene. */

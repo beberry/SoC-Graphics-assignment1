@@ -19,6 +19,8 @@
 /* Some STL includes. */
 #include <vector>
 
+#include "TextureManager.h"
+
 
 class Cylinder
 {
@@ -28,7 +30,7 @@ private:
 	std::vector<glm::vec3> vertexNormals;
 	GLfloat *vertexColours;
 
-	GLuint bufferObject, normalsBufferObject, elementBuffer;
+	GLuint bufferObject, normalsBufferObject, elementBuffer, textureBuffer, textureID, texID;
 
 	int drawmode;
 	GLuint vertexCount;
@@ -44,7 +46,7 @@ private:
 	
 public:
 	// Common for graphics objects.
-	Cylinder(GLfloat height, GLfloat maxBottomRadius, GLfloat radiussCoeff);
+	Cylinder(GLfloat height, GLfloat maxBottomRadius, GLfloat radiussCoeff, GLuint textureID);
 	~Cylinder();
 
 	GLfloat* Cylinder::getVertexPositions();

@@ -111,7 +111,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\..\..\Desktop\index.jpg">
+    <Image Include="textures\index.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

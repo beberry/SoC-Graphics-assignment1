@@ -5,11 +5,13 @@
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec4 colour;
 layout(location = 2) in vec3 normal;
+layout(location = 3) in vec3 textcoord;
 
 // My out definitions
 out vec3 fnormal, flightdir;
 out vec4 fcolour, fdiffusecolour, fambientcolour, fposition;
 out float fattenuation;
+out vec2 ftexcoord;
 
 // Uniforms
 uniform mat4 model, view, projection;
@@ -20,6 +22,7 @@ uniform uint emitmode, colourmode;
 
 void main()
 {
+	ftexcoord = textcoord.xy;
 	vec3 emissive = vec3(0);				// Create a vec3(0, 0, 0) for our emmissive light
 	vec4 position_h = vec4(position, 1.0);	// Convert the (x,y,z) position to homogeneous coords (x,y,z,w)
 	vec4 diffuse_albedo;					// This is the vertex colour, used to handle the colourmode change
