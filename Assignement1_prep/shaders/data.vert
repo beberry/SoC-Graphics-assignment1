@@ -1,5 +1,5 @@
 // Specify minimum OpenGL version
-#version 400
+#version 420
 
 // Define the vertex attributes
 layout(location = 0) in vec3 position;
@@ -13,6 +13,10 @@ out vec4 fcolour, fdiffusecolour, fambientcolour, fposition;
 out float fattenuation;
 out vec2 ftexcoord;
 
+
+out float u1;
+out float u2;
+
 // Uniforms
 uniform mat4 model, view, projection;
 uniform mat3 normalmatrix;
@@ -22,6 +26,10 @@ uniform uint emitmode, colourmode;
 
 void main()
 {
+	// http://vcg.isti.cnr.it/~tarini/no-seams/jgt_tarini.pdf 
+	u1 = fract(textcoord.x);
+	u2 = fract(textcoord.x+0.5)-0.5;
+
 	ftexcoord = textcoord.xy;
 	vec3 emissive = vec3(0);				// Create a vec3(0, 0, 0) for our emmissive light
 	vec4 position_h = vec4(position, 1.0);	// Convert the (x,y,z) position to homogeneous coords (x,y,z,w)
@@ -32,7 +40,7 @@ void main()
 	if (colourmode == 1)
 		diffuse_albedo = colour;
 	else
-		diffuse_albedo = vec4(1.0, 0, 0, 1.0);
+		diffuse_albedo = vec4(1.0, 1.0, 1.0, 1.0);
 
 	//vec3 ambient = diffuse_albedo.xyz *0.2;
 

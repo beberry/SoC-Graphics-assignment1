@@ -27,7 +27,7 @@ Cylinder::Cylinder(GLfloat height, GLfloat maxTopRadius, GLfloat radiussCoeff, G
 		glActiveTexture(GL_TEXTURE0);
 
 		/* load an image file directly as a new OpenGL texture */
-		this->texID = SOIL_load_OGL_texture("textures/index3.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+		this->texID = SOIL_load_OGL_texture("textures/index4.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
 			SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
 
 		/* check for an error during the load process */
@@ -46,6 +46,8 @@ Cylinder::Cylinder(GLfloat height, GLfloat maxTopRadius, GLfloat radiussCoeff, G
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 
 	// Can't get this to work
@@ -232,12 +234,7 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	glBufferData(GL_ARRAY_BUFFER, this->vertexNormals.size()*sizeof(glm::vec3), this->vertexNormals.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	GLfloat texcoords[] = {
-		0.0f, 0.0f,
-		5.0f, 0.0f,
-		5.0f, 5.0f,
-		0.0f, 5.0f
-	};
+	
 
 	/* Generate texture coordinats */
 	std::vector<GLfloat> texcoords1;
@@ -251,13 +248,6 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 		{
 			texcoords1.push_back(x*longstep);
 			texcoords1.push_back(i*latstep);
-
-			/*if (x % (int)(numlongs - 1) == 0)
-			{
-				texcoords1.push_back(x*longstep);
-				texcoords1.push_back(i+1)*latstep);
-			}*/
-
 		}
 	}
 

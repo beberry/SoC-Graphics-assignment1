@@ -47,7 +47,7 @@ void Windmill::createTop()
 void Windmill::createBase()
 {
 	this->baseModel = new Cylinder(this->baseHeight, this->topMaxWidth*0.85, this->baseRadiussCoeff, this->textureID);
-	this->baseModel->makeVBO(5.0f, 60.0f);
+	this->baseModel->makeVBO(5.0f, 30.0f);
 }
 
 /* Create the wings for the windmill. */
