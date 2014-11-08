@@ -10,7 +10,7 @@ in vec4 fdiffusecolour, fambientcolour, fposition;
 in float fattenuation;
 in vec2 ftexcoord;
 
-vec3 global_ambient = vec3(0.05, 0.05, 0.05);
+vec3 global_ambient = vec3(0.07, 0.07, 0.07);
 vec3 specular_albedo = vec3(1.0, 0.8, 0.6);
 
 out vec4 outputColor;
@@ -26,7 +26,7 @@ void main()
 	vec3 emissive = vec3(0);
 
 	// Ambient lighting calculation;
-	vec3 ambient = fcolour.xyz *0.2;
+	vec3 ambient = fcolour.xyz *0.3;
 
 	// Diffuse lighting calculation
 	vec3 diffuse = max(dot(fnormal, flightdir), 0.0) * fcolour.xyz;
