@@ -34,7 +34,7 @@ GLuint drawmode;
 
 
 /* Uniforms*/
-GLuint modelID, viewID, projectionID, normalMatrixID, lightPosID, colourmodeID, emitmodeID, textureID;
+GLuint modelID, viewID, projectionID, normalMatrixID, lightPosID, colourmodeID, emitmodeID, textureID, textureModeID, specularModeID;
 GLuint colorModeID;
 
 
@@ -117,7 +117,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	glBindVertexArray(vao);
 
 	/* Create the light source object. */
-	lightSourceModel = new Sphere(0.5, 0.5, false);
+	lightSourceModel = new Sphere(0.5, 0.5, false, textureID);
 	lightSourceModel->makeVBO(20.0f, 30.0f);
 	
 	/* Create shader manager and load the shader programs. */
@@ -143,9 +143,11 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	colourmodeID   = glGetUniformLocation(program, "colourmode");
 	emitmodeID	   = glGetUniformLocation(program, "emitmode");
 	textureID	   = glGetUniformLocation(program, "tex1");
+	textureModeID  = glGetUniformLocation(program, "textureMode");
+	specularModeID = glGetUniformLocation(program, "specularMode");
 
 	/* Create a windmill object/ */
-	windmill = new Windmill(5, 4.0, 1.0, 0.73, 1.1, modelID, normalMatrixID, textureID);
+	windmill = new Windmill(5, 4.0, 1.0, 0.73, 1.1, modelID, normalMatrixID, textureID, textureModeID, specularModeID);
 }
 
 /* The display callback method which redraws the scene. */

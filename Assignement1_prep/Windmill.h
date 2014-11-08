@@ -40,7 +40,7 @@ private:
 	GLfloat wingAngle;
 	GLfloat headAngle;
 
-	GLuint modelID, normalMatrixID, textureID;
+	GLuint modelID, normalMatrixID, textureID, textureModeId, specularModeID;
 
 	GLuint wingCount;
 	Cylinder *baseModel;
@@ -49,7 +49,7 @@ private:
 
 
 public:
-	Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLfloat baseRadiussCoeff, GLuint modelID, GLuint normalMatrixID, GLuint textureID);
+	Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLfloat baseRadiussCoeff, GLuint modelID, GLuint normalMatrixID, GLuint textureID, GLuint textureModeID, GLuint specularModeID);
 	~Windmill();
 
 	void Windmill::createTop();

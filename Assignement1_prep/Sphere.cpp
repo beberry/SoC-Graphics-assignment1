@@ -12,12 +12,46 @@
 #include "Sphere.h"
 
 /* The original code for this object has been taken from Ian Martins lab4 example, modified by Jekabs Stikans */
-Sphere::Sphere(GLfloat maxWidth, GLfloat maxHeight, bool halfSphere)
+Sphere::Sphere(GLfloat maxWidth, GLfloat maxHeight, bool halfSphere, GLuint textureID)
 {
 	this->maxWidth = maxWidth;
 	this->maxHeight = maxHeight;
 	this->drawmode = 3;
 	this->halfSphere = halfSphere;
+
+	this->textureID = textureID;
+
+	try
+	{
+		/* Not actually needed if using one texture at a time */
+		glActiveTexture(GL_TEXTURE0);
+
+		/* load an image file directly as a new OpenGL texture */
+		this->texID = SOIL_load_OGL_texture("textures/copper_3.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+			SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+
+		/* check for an error during the load process */
+		if (this->texID == 0)
+		{
+			printf("TexID SOIL loading error: '%s'\n", SOIL_last_result());
+		}
+	}
+	catch (std::exception &e)
+	{
+		printf("\nImage file loading failed.");
+	}
+
+	/* Define the texture behaviour parameters */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+
+	// Can't get this to work
+	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 
@@ -59,6 +93,36 @@ GLuint Sphere::makeVBO(GLfloat numlats, GLfloat numlongs)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)* this->vertexCount * 3, this->vertexPositions, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	/* Generate texture coordinats */
+	std::vector<GLfloat> texcoords1;
+
+	GLfloat latstep = 1.0 / numlats;
+	GLfloat longstep = 1.0 / numlongs;
+
+	texcoords1.push_back(0.0);
+	texcoords1.push_back(0.0);
+
+	int k = 1;
+	for (int i = 0; i < numlats-1; i++)
+	{
+		for (int x = 0; x < numlongs; x++)
+		{
+			texcoords1.push_back(x*longstep);
+			texcoords1.push_back(i*latstep);
+
+			k++;
+			
+		}
+	}
+
+	texcoords1.push_back(1.0);
+	texcoords1.push_back(1.0);
+
+	/* Generate the texture coordinate buffer */
+	glGenBuffers(1, &this->textureBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->textureBuffer);
+	glBufferData(GL_ARRAY_BUFFER, texcoords1.size()*sizeof(GLfloat), texcoords1.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	/* Store the colours in a buffer object */
 	/*glGenBuffers(1, &sphereColours);
 	glBindBuffer(GL_ARRAY_BUFFER, sphereColours);
@@ -180,6 +244,13 @@ void Sphere::draw()
 	glBindBuffer(GL_ARRAY_BUFFER, this->normalsBufferObject);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
+
+	/* BInd the texture data */
+	glEnableVertexAttribArray(3);
+	glBindBuffer(GL_ARRAY_BUFFER, this->textureBuffer);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+
 	/* Bind the sphere colours */
 	/*glBindBuffer(GL_ARRAY_BUFFER, sphereColours);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
@@ -199,6 +270,7 @@ void Sphere::draw()
 	}
 	else
 	{
+		glBindTexture(GL_TEXTURE_2D, this->texID);
 		/* Bind the indexed vertex buffer */
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
 
@@ -210,7 +282,6 @@ void Sphere::draw()
 		GLuint lat_offset_jump = (numlongs * 2) + 2;
 		GLuint lat_offset_start = numlongs + 2;
 		GLuint lat_offset_current = lat_offset_start * 4;
-
 		/* Draw the triangle strips of latitudes */
 		for (i = 0; i < numlats - 2; i++)
 		{

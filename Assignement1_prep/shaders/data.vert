@@ -21,16 +21,20 @@ out float u2;
 uniform mat4 model, view, projection;
 uniform mat3 normalmatrix;
 uniform vec4 lightPos;
-uniform uint emitmode, colourmode;
+uniform uint emitmode, colourmode, textureMode, specularMode;
 
 
 void main()
 {
-	// http://vcg.isti.cnr.it/~tarini/no-seams/jgt_tarini.pdf 
-	u1 = fract(textcoord.x);
-	u2 = fract(textcoord.x+0.5)-0.5;
+	if(textureMode == 1)
+	{
+		// http://vcg.isti.cnr.it/~tarini/no-seams/jgt_tarini.pdf 
+		u1 = fract(textcoord.x);
+		u2 = fract(textcoord.x+0.5)-0.5;
 
-	ftexcoord = textcoord.xy;
+		ftexcoord = textcoord.xy;
+	}
+
 	vec3 emissive = vec3(0);				// Create a vec3(0, 0, 0) for our emmissive light
 	vec4 position_h = vec4(position, 1.0);	// Convert the (x,y,z) position to homogeneous coords (x,y,z,w)
 	vec4 diffuse_albedo;					// This is the vertex colour, used to handle the colourmode change

@@ -20,6 +20,10 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
+#include <iostream>
+#include <vector>
+
+#include "TextureManager.h"
 
 class Sphere
 {
@@ -29,7 +33,7 @@ private:
 	glm::vec3 *vertexNormals;
 	GLfloat *vertexColours;
 
-	GLuint bufferObject, normalsBufferObject, elementBuffer;
+	GLuint bufferObject, normalsBufferObject, elementBuffer, textureBuffer, textureID, texID;
 
 	int drawmode;
 	GLuint vertexCount;
@@ -45,7 +49,7 @@ private:
 
 public:
 	// Common for graphics objects.
-	Sphere(GLfloat maxWidth, GLfloat maxHeight, bool halfSphere);
+	Sphere(GLfloat maxWidth, GLfloat maxHeight, bool halfSphere, GLuint textureID);
 	~Sphere();
 
 	GLfloat* Sphere::getVertexPositions();

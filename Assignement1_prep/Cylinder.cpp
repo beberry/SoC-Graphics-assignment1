@@ -385,6 +385,8 @@ void Cylinder::draw()
 	}
 	else
 	{
+		glBindTexture(GL_TEXTURE_2D, this->texID);
+
 		/* Draw the latitude triangle strips */
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
 
@@ -392,7 +394,6 @@ void Cylinder::draw()
 
 		for (i = 0; i < numlats; i++)
 		{
-			glBindTexture(GL_TEXTURE_2D, this->textureID);
 			glDrawElements(GL_TRIANGLE_STRIP, this->numlongs * 2 + 2, GL_UNSIGNED_INT, (GLvoid*)(lat_offset*i));
 		}
 	}

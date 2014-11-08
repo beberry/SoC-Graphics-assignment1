@@ -8,7 +8,7 @@
 #include "Windmill.h"
 
 /* The constructor method which initializes this object. */
-Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLfloat baseRadiussCoeff, GLuint modelID, GLuint normalMatrixID, GLuint textureID)
+Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLfloat baseRadiussCoeff, GLuint modelID, GLuint normalMatrixID, GLuint textureID, GLuint textureModeId, GLuint specularModeID)
 {
 	this->wingCount		   = wingCount;
 	this->baseRatio		   = baseRatio;
@@ -23,6 +23,8 @@ Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloa
 	this->modelID		 = modelID;
 	this->normalMatrixID = normalMatrixID;
 	this->textureID		 = textureID;
+	this->textureModeId  = textureModeId;
+	this->specularModeID = specularModeID;
 
 	/* Construct the object. */
 	this->createTop();
@@ -39,7 +41,7 @@ Windmill::~Windmill()
 /* Create the roof / "head" object for the windmill. */
 void Windmill::createTop()
 {
-	this->topModel = new Sphere(this->topMaxWidth, this->topHeight, true);
+	this->topModel = new Sphere(this->topMaxWidth, this->topHeight, true, this->textureID);
 	this->topModel->makeVBO(20.0f, 30.0f);
 }
 
@@ -74,21 +76,29 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 	
 	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
 
+	glUniform1ui(this->textureModeId, 1);
+	glUniform1ui(this->specularModeID, 1);
 	glUniformMatrix4fv(this->modelID, 1, GL_FALSE, &model[0][0]);
 	glUniformMatrix3fv(this->normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
 
 	this->topModel->draw();
 	modelRotate.pop();
+	glUniform1ui(this->specularModeID, 0);
+	glUniform1ui(this->textureModeId, 0);
 
 	/* Do some transformations with the base of the windmill. */
 	model = modelTranslate.top() * modelScale.top() * modelRotate.top();
 
 	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
 
+	glUniform1ui(this->textureModeId, 1);
+	glUniform1ui(this->specularModeID,0);
 	glUniformMatrix4fv(this->modelID, 1, GL_FALSE, &model[0][0]);
 	glUniformMatrix3fv(this->normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
+	glUniform1ui(this->specularModeID, 0);
 
 	this->baseModel->draw();
+	glUniform1ui(this->textureModeId, 0);
 
 	/* Do some transformations with the wings of the windmill. */
 	GLfloat wingAngle = 360.f / this->wingCount;
@@ -152,6 +162,7 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 		gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
 
+		glUniform1ui(this->specularModeID, 0);
 		glUniformMatrix4fv(this->modelID, 1, GL_FALSE, &model[0][0]);
 		glUniformMatrix4fv(this->normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
 
@@ -160,6 +171,7 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 		modelTranslate.pop();
 		modelRotate.pop();
+		glUniform1ui(this->specularModeID, 0);
 	}
 }
 
