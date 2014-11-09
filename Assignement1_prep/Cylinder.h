@@ -61,5 +61,6 @@ public:
 	GLfloat angle_x, angle_y, angle_z, angle_inc_x, angle_inc_y, angle_inc_z;
 
 	// Only for this object.
+	void setTexture(std::string textureName);
 };
 

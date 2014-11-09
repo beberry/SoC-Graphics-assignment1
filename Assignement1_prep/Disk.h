@@ -55,6 +55,7 @@ public:
 	GLfloat angle_x, angle_y, angle_z, angle_inc_x, angle_inc_y, angle_inc_z;
 
 	// Only for this object.
-	void setVertexPositions(std::vector<GLfloat> vertexPositions);
+	void setVertexPositions(std::vector<GLfloat> vertexPositions, GLint normalYDirection);
+	void setTexture(std::string textureName);
 };
 

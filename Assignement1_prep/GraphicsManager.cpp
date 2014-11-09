@@ -367,6 +367,6 @@ void GraphicsManager::cmdManager()
 	std::cout << "\t5 - Move light source further away on Z axis." << std::endl;
 	std::cout << "\t6 - Move light source closer on Z axis" << std::endl;
 	std::cout << "\n\n-----------------Other------------------------------------" << std::endl;
-	std::cout << "N - Toggle between draw modes." << std::endl;
+	std::cout << "\tN - Toggle between draw modes." << std::endl;
 	std::cout << std::endl;
 }

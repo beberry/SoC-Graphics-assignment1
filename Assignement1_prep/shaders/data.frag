@@ -34,7 +34,12 @@ void main()
 	// Specular lighting caluclation
 	vec3 V = normalize(-fposition.xyz);	
 	vec3 R = reflect(-flightdir, fnormal);
-	vec3 specular = pow(max(dot(R, V), 0.0), 8.0) * specular_albedo;
+	vec3 specular = vec3(0.0, 0.0, 0.0);
+	
+	if(specularMode == 1)
+	{
+		specular = pow(max(dot(R, V), 0.0), 8.0) * specular_albedo;
+	}
 
 	if (emitmode == 1) emissive = vec3(1.0, 1.0, 0.8);
 
@@ -66,7 +71,7 @@ void main()
 		}
 
 		vec4 texcolour = texture(tex1, kk3);
-		outputColor = vec4(fattenuation*(texcolour.xyz*(ambient + diffuse))+global_ambient+emissive, 1.0);
+		outputColor = vec4(fattenuation*(texcolour.xyz*(ambient + diffuse+specular))+global_ambient+emissive, 1.0);
 	}
 
 	//outputColor = vec4(1.0,0.0,0.0,1.0);

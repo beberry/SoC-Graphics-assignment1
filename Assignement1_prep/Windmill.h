@@ -46,9 +46,11 @@ private:
 
 	GLuint wingCount;
 	GLuint wingHolderEdges;
+	GLuint baseLongs;
 	Cylinder *baseModel;
 	Cylinder *wingHolder;
 	Disk *wingHolderCap;
+	Disk *baseModelCap;
 	Sphere *topModel;
 	std::vector <WindmillWing*> wings;
 
@@ -59,6 +61,7 @@ public:
 
 	void Windmill::createTop();
 	void Windmill::createBase();
+	void Windmill::createBaseCap();
 	void Windmill::createWingHolder();
 	void Windmill::createWingHolderCap();
 	void Windmill::createWings();

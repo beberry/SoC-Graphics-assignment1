@@ -8,38 +8,6 @@ Disk::Disk(GLfloat radiuss, GLuint numedges, GLuint textureID)
 	this->drawmode = 3; 
 	
 	this->textureID = textureID;
-
-	try
-	{
-		/* Not actually needed if using one texture at a time */
-		glActiveTexture(GL_TEXTURE0);
-
-		/* load an image file directly as a new OpenGL texture */
-		this->texID = SOIL_load_OGL_texture("textures/metal_1.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
-			SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
-
-		/* check for an error during the load process */
-		if (this->texID == 0)
-		{
-			printf("TexID SOIL loading error: '%s'\n", SOIL_last_result());
-		}
-	}
-	catch (std::exception &e)
-	{
-		printf("\nImage file loading failed.");
-	}
-
-	/* Define the texture behaviour parameters */
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-
-	// Can't get this to work
-	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 
@@ -64,7 +32,7 @@ std::vector<GLfloat>* Disk::getVertexPositions()
 }*/
 
 /* A method which allows changing the vetex positions of this object. */
-void Disk::setVertexPositions(std::vector<GLfloat> vertexPositions)
+void Disk::setVertexPositions(std::vector<GLfloat> vertexPositions, GLint normalYDirection)
 {
 	/* Set the new vertex positions. */
 	this->vertexPositions = vertexPositions;
@@ -82,7 +50,7 @@ void Disk::setVertexPositions(std::vector<GLfloat> vertexPositions)
 
 	for (int i = 0; i < this->vertexPositions.size()/3; i++)
 	{
-		this->vertexNormals.push_back(glm::vec3(0, 1, 0));
+		this->vertexNormals.push_back(glm::vec3(0, normalYDirection*1, 0));
 	}
 
 	/* Generate texture coordinats */
@@ -95,7 +63,7 @@ void Disk::setVertexPositions(std::vector<GLfloat> vertexPositions)
 	texcoords1.push_back(0.5);
 	texcoords1.push_back(0.5);
 
-	for (int x = 0; x < this->vertexPositions.size() / 3 - 1; x++)
+	for (int x = 1; x < this->vertexPositions.size() / 3; x++)
 	{
 		GLfloat xval = this->vertexPositions[x * 3];
 		GLfloat yval = this->vertexPositions[x * 3+2];
@@ -184,4 +152,42 @@ void Disk::draw()
 void Disk::setDrawmode(int drawmode)
 {
 	this->drawmode = drawmode;
+}
+
+/* Set the texture for this object. */
+void Disk::setTexture(std::string textureName)
+{
+	try
+	{
+		/* Not actually needed if using one texture at a time */
+		glActiveTexture(GL_TEXTURE0);
+
+		std::string fileLoc = "textures/" + textureName;
+
+		/* load an image file directly as a new OpenGL texture */
+		this->texID = SOIL_load_OGL_texture(fileLoc.c_str() , SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+			SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT);
+
+		/* check for an error during the load process */
+		if (this->texID == 0)
+		{
+			printf("TexID SOIL loading error: '%s'\n", SOIL_last_result());
+		}
+	}
+	catch (std::exception &e)
+	{
+		printf("\nImage file loading failed.");
+	}
+
+	/* Define the texture behaviour parameters */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+
+	// Can't get this to work
+	glGenerateMipmap(GL_TEXTURE_2D);
 }
