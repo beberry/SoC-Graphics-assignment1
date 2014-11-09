@@ -332,8 +332,8 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	/* Valid input END */
 
 	
-	if (k == 'Z') zoom += 0.07f;
-	if (k == 'X') zoom -= 0.07f;
+	if (k == 'Z') zoom -= 0.07f;
+	if (k == 'X') zoom += 0.07f;
 
 
 	if (k == '7') vx -= 1.f;
