@@ -390,6 +390,9 @@ void Cylinder::draw()
 		/* Draw the latitude triangle strips */
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
 
+		/* Close the bottom of the cylinder with a trianglefan  */
+		//glDrawElements(GL_TRIANGLE_FAN, numlongs + 2, GL_UNSIGNED_INT, (GLvoid*)(0));
+
 		GLuint lat_offset = 4 * (this->numlongs * 2 + 2);
 
 		for (i = 0; i < numlats; i++)

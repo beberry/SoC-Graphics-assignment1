@@ -282,6 +282,7 @@ void Sphere::draw()
 		GLuint lat_offset_jump = (numlongs * 2) + 2;
 		GLuint lat_offset_start = numlongs + 2;
 		GLuint lat_offset_current = lat_offset_start * 4;
+
 		/* Draw the triangle strips of latitudes */
 		for (i = 0; i < numlats - 2; i++)
 		{

@@ -102,6 +102,7 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 	/* Do some transformations with the cylinder which connects the sails to the roof of the windmill. */
 	modelRotate.push(glm::rotate(modelRotate.top(), 90.0f, glm::vec3(1, 0, 0)));
+	modelRotate.push(glm::rotate(modelRotate.top(), this->wingAngle, glm::vec3(0, 1, 0)));
 	modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(0, 0.15, this->topMaxWidth/2)));
 	model = fullRotation*modelTranslate.top() * modelScale.top() * modelRotate.top();
 
@@ -113,6 +114,7 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 	glUniformMatrix3fv(this->normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
 
 	this->wingHolder->draw();
+	modelRotate.pop();
 	modelRotate.pop();
 	modelTranslate.pop();
 
