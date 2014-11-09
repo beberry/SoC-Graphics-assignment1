@@ -36,6 +36,7 @@ private:
 	GLfloat topMaxWidth;
 	GLfloat baseRatio;
 	GLfloat baseRadiussCoeff;
+	GLfloat wingDistanceRadiuss;
 
 	GLfloat wingAngle;
 	GLfloat headAngle;
@@ -44,6 +45,7 @@ private:
 
 	GLuint wingCount;
 	Cylinder *baseModel;
+	Cylinder *wingHolder;
 	Sphere *topModel;
 	std::vector <WindmillWing*> wings;
 
@@ -54,6 +56,7 @@ public:
 
 	void Windmill::createTop();
 	void Windmill::createBase();
+	void Windmill::createWingHolder();
 	void Windmill::createWings();
 	void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std::stack<glm::mat4> &modelScale, std::stack<glm::mat4> &modelRotate);
 	void Windmill::setDrawmode(int drawmode);

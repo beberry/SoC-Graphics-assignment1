@@ -10,14 +10,15 @@
 /* The constructor method which initializes this object. */
 Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLfloat baseRadiussCoeff, GLuint modelID, GLuint normalMatrixID, GLuint textureID, GLuint textureModeId, GLuint specularModeID)
 {
-	this->wingCount		   = wingCount;
-	this->baseRatio		   = baseRatio;
-	this->height		   = height;
-	this->baseHeight	   = this->height * this->baseRatio;
-	this->topHeight		   = this->height - this->baseHeight;
-	this->topMaxWidth	   = topMaxWidth;
-	this->wingAngle		   = 0.0f;
-	this->baseRadiussCoeff = baseRadiussCoeff;
+	this->wingCount			  = wingCount;
+	this->baseRatio			  = baseRatio;
+	this->height			  = height;
+	this->baseHeight		  = this->height * this->baseRatio;
+	this->topHeight			  = this->height - this->baseHeight;
+	this->topMaxWidth	      = topMaxWidth;
+	this->wingAngle			  = 0.0f;
+	this->wingDistanceRadiuss = 0.3f;
+	this->baseRadiussCoeff	  = baseRadiussCoeff;
 
 	/* Prepare for setting this models uniforms */
 	this->modelID		 = modelID;
@@ -29,6 +30,7 @@ Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloa
 	/* Construct the object. */
 	this->createTop();
 	this->createBase();
+	this->createWingHolder();
 	this->createWings();
 
 	this->wings;
@@ -52,6 +54,13 @@ void Windmill::createBase()
 	this->baseModel->makeVBO(5.0f, 30.0f);
 }
 
+/* Create the cylinder objec which connects the wings witht he head of the windmill. */
+void Windmill::createWingHolder()
+{
+	this->wingHolder = new Cylinder(this->topMaxWidth, this->wingDistanceRadiuss, 1.0, this->textureID);
+	this->wingHolder->makeVBO(2.0f, 10.0f);
+}
+
 /* Create the wings for the windmill. */
 void Windmill::createWings()
 {
@@ -70,6 +79,11 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 	glm::mat4 model			  = glm::mat4(1.0f);
 	glm::mat3 gl_NormalMatrix = glm::mat3(1.0f);
 
+
+	/* Rotate all arms aroudn y axis*/
+	glm::mat4 fullRotation = glm::mat4(1.0f);
+	fullRotation = glm::rotate(fullRotation, this->headAngle, glm::vec3(0, 1, 0));
+
 	/* Do some transformations with the roof of the windmill. */
 	modelRotate.push(glm::rotate(modelRotate.top(), this->headAngle, glm::vec3(0, 1, 0)));
 	model = modelTranslate.top() * modelScale.top() * modelRotate.top();
@@ -83,6 +97,25 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 	this->topModel->draw();
 	modelRotate.pop();
+	glUniform1ui(this->specularModeID, 0);
+	glUniform1ui(this->textureModeId, 0);
+
+	/* Do some transformations with the cylinder which connects the sails to the roof of the windmill. */
+	modelRotate.push(glm::rotate(modelRotate.top(), 90.0f, glm::vec3(1, 0, 0)));
+	modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(0, 0.15, this->topMaxWidth/2)));
+	model = fullRotation*modelTranslate.top() * modelScale.top() * modelRotate.top();
+
+	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
+
+	glUniform1ui(this->textureModeId, 1);
+	glUniform1ui(this->specularModeID, 1);
+	glUniformMatrix4fv(this->modelID, 1, GL_FALSE, &model[0][0]);
+	glUniformMatrix3fv(this->normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
+
+	this->wingHolder->draw();
+	modelRotate.pop();
+	modelTranslate.pop();
+
 	glUniform1ui(this->specularModeID, 0);
 	glUniform1ui(this->textureModeId, 0);
 
@@ -106,10 +139,6 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 	GLfloat DEG_TO_RADIANS = 3.141592f / 180.f;
 
 
-	/* Rotate all arms aroudn y axis*/
-	glm::mat4 fullRotation = glm::mat4(1.0f);
-	fullRotation = glm::rotate(fullRotation, this->headAngle, glm::vec3(0, 1, 0));
-
 	/* Apply all transformations to each wing of the windmill. */
 	for (int i = 0; i < this->wings.size(); i++)
 	{
@@ -128,7 +157,6 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 		int quadrant = abs(activeAngle/90.0)+1; /* Calculate in which quadrant the figure is ( I, II, III, IV ) */
 
-		GLfloat radiuss = 0.3f;
 		GLfloat xMove = 0.0f;
 		GLfloat yMove = 0.0f;
 
@@ -136,23 +164,23 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 		if (quadrant == 1)
 		{
-			xMove = cos(radians)*radiuss;
-			yMove = sin(radians)*radiuss;
+			xMove = cos(radians)*this->wingDistanceRadiuss;
+			yMove = sin(radians)*this->wingDistanceRadiuss;
 		}
 		else if (quadrant == 2)
 		{
-			xMove = -sin(radians)*radiuss;
-			yMove = cos(radians)*radiuss;
+			xMove = -sin(radians)*this->wingDistanceRadiuss;
+			yMove = cos(radians)*this->wingDistanceRadiuss;
 		}
 		else if (quadrant == 3)
 		{
-			xMove = -cos(radians)*radiuss;
-			yMove = -sin(radians)*radiuss;
+			xMove = -cos(radians)*this->wingDistanceRadiuss;
+			yMove = -sin(radians)*this->wingDistanceRadiuss;
 		}
 		else if (quadrant == 4)
 		{
-			xMove = sin(radians)*radiuss;
-			yMove = -cos(radians)*radiuss;
+			xMove = sin(radians)*this->wingDistanceRadiuss;
+			yMove = -cos(radians)*this->wingDistanceRadiuss;
 		}
 
 
@@ -179,6 +207,7 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 void Windmill::setDrawmode(int drawmode)
 {
 	this->baseModel->setDrawmode(drawmode);
+	this->wingHolder->setDrawmode(drawmode);
 	this->topModel->setDrawmode(drawmode);
 
 	for (int i = 0; i < this->wings.size(); i++)
