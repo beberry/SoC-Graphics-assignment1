@@ -49,7 +49,7 @@ public:
 	Cylinder(GLfloat height, GLfloat maxBottomRadius, GLfloat radiussCoeff, GLuint textureID);
 	~Cylinder();
 
-	GLfloat* Cylinder::getVertexPositions();
+	std::vector<GLfloat>* Cylinder::getVertexPositions();
 	GLfloat* Cylinder::getVerteColours();
 
 	GLuint makeVBO(GLfloat numlats, GLfloat numlongs);

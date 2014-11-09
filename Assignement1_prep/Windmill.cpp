@@ -18,6 +18,7 @@ Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloa
 	this->topMaxWidth	      = topMaxWidth;
 	this->wingAngle			  = 0.0f;
 	this->wingDistanceRadiuss = 0.3f;
+	this->wingHolderEdges	  = 30;
 	this->baseRadiussCoeff	  = baseRadiussCoeff;
 
 	/* Prepare for setting this models uniforms */
@@ -31,6 +32,7 @@ Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloa
 	this->createTop();
 	this->createBase();
 	this->createWingHolder();
+	this->createWingHolderCap();
 	this->createWings();
 
 	this->wings;
@@ -58,7 +60,34 @@ void Windmill::createBase()
 void Windmill::createWingHolder()
 {
 	this->wingHolder = new Cylinder(this->topMaxWidth, this->wingDistanceRadiuss, 1.0, this->textureID);
-	this->wingHolder->makeVBO(2.0f, 10.0f);
+	this->wingHolder->makeVBO(2.0f, this->wingHolderEdges);
+}
+
+/* Create the wing holder cap. */
+void Windmill::createWingHolderCap()
+{
+	this->wingHolderCap = new Disk(this->wingDistanceRadiuss, this->wingHolderEdges, this->textureID);
+
+	/* Get the vertex positions for this cap */
+	std::vector<GLfloat>* whVertexPositions = this->wingHolder->getVertexPositions();
+	std::vector<GLfloat> tmpVector;
+
+	for (int i = 0; i < this->wingHolderEdges * 3; i++)
+	{
+		if ((i + 2) % 3 == 0)
+		{
+			/* This is the y value. */
+			tmpVector.push_back(0.0);
+		}
+		else
+		{
+			/* X or Z value */
+			tmpVector.push_back(whVertexPositions->at(i));
+		}
+	}
+
+	this->wingHolderCap->setVertexPositions(tmpVector);
+	this->wingHolderCap->makeVBO();
 }
 
 /* Create the wings for the windmill. */
@@ -120,6 +149,28 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 	glUniform1ui(this->specularModeID, 0);
 	glUniform1ui(this->textureModeId, 0);
+
+	/* Do some transformations with the wingholder cap. */
+	modelRotate.push(glm::rotate(modelRotate.top(), 90.0f, glm::vec3(1, 0, 0)));
+	modelRotate.push(glm::rotate(modelRotate.top(), this->wingAngle, glm::vec3(0, 1, 0)));
+	modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(0, 0.15, this->topMaxWidth / 2)));
+	model = fullRotation*modelTranslate.top() * modelScale.top() * modelRotate.top();
+
+	gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
+
+	glUniform1ui(this->textureModeId, 1);
+	glUniform1ui(this->specularModeID, 1);
+	glUniformMatrix4fv(this->modelID, 1, GL_FALSE, &model[0][0]);
+	glUniformMatrix3fv(this->normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
+
+	this->wingHolderCap->draw();
+	modelRotate.pop();
+	modelRotate.pop();
+	modelTranslate.pop();
+
+	glUniform1ui(this->specularModeID, 0);
+	glUniform1ui(this->textureModeId, 0);
+
 
 	/* Do some transformations with the base of the windmill. */
 	model = modelTranslate.top() * modelScale.top() * modelRotate.top();
@@ -210,6 +261,7 @@ void Windmill::setDrawmode(int drawmode)
 {
 	this->baseModel->setDrawmode(drawmode);
 	this->wingHolder->setDrawmode(drawmode);
+	this->wingHolderCap->setDrawmode(drawmode);
 	this->topModel->setDrawmode(drawmode);
 
 	for (int i = 0; i < this->wings.size(); i++)

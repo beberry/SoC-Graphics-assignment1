@@ -81,9 +81,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="Disk.h" />
     <ClInclude Include="glfw_wrap.h" />
     <ClInclude Include="GraphicsManager.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="shaderManager.h" />
     <ClInclude Include="Cylinder.h" />
     <ClInclude Include="SOIL.h" />
@@ -94,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Disk.cpp" />
     <ClCompile Include="glfw_wrap.cpp" />
     <ClCompile Include="GraphicsManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -110,6 +113,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\index.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Assignement1_prep.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,6 +26,7 @@
 #include "Sphere.h"
 #include "WindmillWing.h"
 #include "Cube.h"
+#include "Disk.h"
 
 class Windmill
 {
@@ -44,8 +45,10 @@ private:
 	GLuint modelID, normalMatrixID, textureID, textureModeId, specularModeID;
 
 	GLuint wingCount;
+	GLuint wingHolderEdges;
 	Cylinder *baseModel;
 	Cylinder *wingHolder;
+	Disk *wingHolderCap;
 	Sphere *topModel;
 	std::vector <WindmillWing*> wings;
 
@@ -57,6 +60,7 @@ public:
 	void Windmill::createTop();
 	void Windmill::createBase();
 	void Windmill::createWingHolder();
+	void Windmill::createWingHolderCap();
 	void Windmill::createWings();
 	void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std::stack<glm::mat4> &modelScale, std::stack<glm::mat4> &modelRotate);
 	void Windmill::setDrawmode(int drawmode);

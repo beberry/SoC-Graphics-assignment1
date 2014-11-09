@@ -402,6 +402,13 @@ void Cylinder::draw()
 	}
 }
 
+/* Return the vertex positions for this object */
+std::vector<GLfloat>* Cylinder::getVertexPositions()
+{
+	return &this->vertexPositions;
+}
+
+
 /* Set the draw mode for this object. */
 void Cylinder::setDrawmode(int drawmode)
 {
