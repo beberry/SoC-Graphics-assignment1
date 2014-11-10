@@ -1,5 +1,3 @@
-// Minimal fragment shader
-
 #version 400
 
 in VS_OUT
@@ -9,20 +7,20 @@ in VS_OUT
 	float attenuation;
 } vs_out;
 
-in vec2 ftexcoord;
+in VS_OUT
+{
+	vec2 texcoord;
+	float u1, u2;
+} vs_texture;
 
-vec3 global_ambient = vec3(0.07, 0.07, 0.07);
+vec3 global_ambient  = vec3(0.07, 0.07, 0.07);
 vec3 specular_albedo = vec3(1.0, 0.8, 0.6);
-
-out vec4 outputColor;
+vec4 fog_colour		 = vec4(0.1, 0.1, 0.1, 1.0);
 
 uniform uint emitmode, textureMode, specularMode, fogMode;
 uniform sampler2D tex1;
 
-in float u1;
-in float u2;
-
-vec4 fog_colour = vec4(0.1, 0.1, 0.1, 1.0);
+out vec4 outputColor;
 
 vec4 fog(vec4 c)
 {
@@ -51,6 +49,36 @@ vec4 fog_linear(vec4 c)
 	return mix(fog_colour, c, fog_factor);
 }
 
+vec4 texturing()
+{
+	// Used for texturing without vertex seams.
+	// Taken from http://vcg.isti.cnr.it/~tarini/no-seams/jgt_tarini.pdf 
+
+	vec2 tmp1, tmp2, tmp3;
+	tmp1.y = vs_texture.texcoord.y;
+	tmp2.y = vs_texture.texcoord.y;
+	tmp3.y = vs_texture.texcoord.y;
+
+	tmp1.x = vs_texture.u1;
+	tmp2.x = vs_texture.u2;
+
+	float a = fwidth(tmp1);
+	float b = fwidth(tmp2);
+
+	if(a <= b)
+	{
+		tmp3.x = tmp1.x;
+	}
+	else
+	{
+		tmp3.x = tmp2.x;
+	}
+
+	vec4 texcolour = texture(tex1, tmp3);
+	
+	return texcolour;
+}
+
 void main()
 {
 	vec3 emissive = vec3(0);
@@ -71,49 +99,28 @@ void main()
 		specular = pow(max(dot(R, V), 0.0), 8.0) * specular_albedo;
 	}
 
-	if (emitmode == 1) emissive = vec3(1.0, 1.0, 0.8);
+	if (emitmode == 1) 
+	{
+		emissive = vec3(1.0, 1.0, 0.8);
+	}
 
-	
-	//outputColor = vec4(vs_out.attenuation*(ambient+diffuse+specular)+global_ambient+emissive, 1.0);
 	outputColor = vec4(vs_out.attenuation*(ambient+diffuse+specular)+global_ambient+emissive, 1.0);
 
 	if(textureMode == 1)
 	{
-		vec2 kk1, kk2, kk3;
-		kk1.y = ftexcoord.y;
-		kk2.y = ftexcoord.y;
-		kk3.y = ftexcoord.y;
-
-		kk1.x = u1;
-		kk2.x = u2;
-
-
-		float bb = fwidth(kk1);
-		float aa = fwidth(kk2);
-
-		if(bb <= aa)
-		{
-			kk3.x = kk1.x;
-		}
-		else
-		{
-			kk3.x = kk2.x;
-		}
-
-		vec4 texcolour = texture(tex1, kk3);
+		// If texture mode is enabled, then get the fragment colour from the texture map.
+		vec4 texcolour = texturing();
 		outputColor = vec4(vs_out.attenuation*(texcolour.xyz*(ambient + diffuse+specular))+global_ambient+emissive, 1.0);
 	}
 
 	if(fogMode == 1)
 	{
-		// Linear fog
+		// Apply linear fog
 		outputColor = fog_linear(outputColor);
 	}
 	else if(fogMode == 2)
 	{
-		// Fog from the super bible
+		// Apply exponential Fog from the super bible
 		outputColor = fog(outputColor);
 	}
-
-	//outputColor = vec4(1.0,0.0,0.0,1.0);
 }
