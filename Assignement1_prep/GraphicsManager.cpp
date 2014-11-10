@@ -61,6 +61,7 @@ GraphicsManager::GraphicsManager()
 
 	wingCount = 5;
 
+
 	Glfw_wrap *glfw = new Glfw_wrap(window_w, window_h, "Assignement 1 prep, JS");
 
 	if (!ogl_LoadFunctions())
@@ -69,6 +70,8 @@ GraphicsManager::GraphicsManager()
 	}
 	else
 	{
+		cmdManager();
+
 		/* Note it you might want to move this call to the wrapper class */
 		glfw->setErrorCallback(errorCallback);
 		glfw->setRenderer(display);
@@ -167,7 +170,7 @@ void display()
 	glEnable(GL_MULTISAMPLE);
 
 	/* Define the background colour */
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	/* Clear the colour and frame buffers */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

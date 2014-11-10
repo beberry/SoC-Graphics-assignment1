@@ -1,7 +1,7 @@
 // Minimal fragment shader
 
-#version 400
-
+#version 410
+layout(location = 0) in vec3 position;
 
 in vec4 fcolour;
 
@@ -9,6 +9,7 @@ in vec3 fnormal, flightdir;
 in vec4 fdiffusecolour, fambientcolour, fposition;
 in float fattenuation;
 in vec2 ftexcoord;
+
 
 vec3 global_ambient = vec3(0.07, 0.07, 0.07);
 vec3 specular_albedo = vec3(1.0, 0.8, 0.6);
@@ -20,6 +21,34 @@ uniform sampler2D tex1;
 
 in float u1;
 in float u2;
+
+vec4 fog(vec4 c)
+{
+	//http://www.ozone3d.net/tutorials/glsl_fog/p03.php
+	vec4 fog_colour = vec4(0.1, 0.1, 0.1, 1.0);
+	float z = length(fposition.xyz);
+
+	float de = 0.025 * smoothstep(0.0, 6.0, 10.0 - position.y);
+	float di = 0.045 * smoothstep(0.0, 40.0, 20.0  - position.y);
+
+	float extinction = exp(-z * de);
+	float inscattering = exp(-z * di);
+
+	return c * extinction + fog_colour * (1.0 - inscattering);
+}
+
+vec4 fog_linear(vec4 c)
+{
+	float fog_maxD = 17.0;
+	float fog_minD = -2.0;
+	vec4 fog_colour = vec4(0.1, 0.1, 0.1, 1.0);
+
+	float dist = length(fposition.xyz);
+	float fog_factor = (fog_maxD - dist) / (fog_maxD - fog_minD);
+	fog_factor = clamp(fog_factor, 0.0, 1.0);
+
+	return mix(fog_colour, c, fog_factor);
+}
 
 void main()
 {
@@ -73,6 +102,7 @@ void main()
 		vec4 texcolour = texture(tex1, kk3);
 		outputColor = vec4(fattenuation*(texcolour.xyz*(ambient + diffuse+specular))+global_ambient+emissive, 1.0);
 	}
-
+	outputColor = fog_linear(outputColor);
+	//outputColor = fog(outputColor);
 	//outputColor = vec4(1.0,0.0,0.0,1.0);
 }
