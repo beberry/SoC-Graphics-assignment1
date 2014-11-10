@@ -142,7 +142,6 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 	glm::mat4 model			  = glm::mat4(1.0f);
 	glm::mat3 gl_NormalMatrix = glm::mat3(1.0f);
 
-
 	/* Rotate all arms aroudn y axis*/
 	glm::mat4 fullRotation = glm::mat4(1.0f);
 	fullRotation = glm::rotate(fullRotation, this->headAngle, glm::vec3(0, 1, 0));

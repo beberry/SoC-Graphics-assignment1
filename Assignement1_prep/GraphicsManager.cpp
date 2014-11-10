@@ -25,7 +25,7 @@ Sphere *lightSourceModel;
 Windmill *windmill;
 
 /* Other configuration */
-GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc, head_angle, zoom, aspect_ratio, scale_scene;
+GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc, head_angle, zoom, aspect_ratio;
 int window_w, window_h;
 
 /* Pre-define functions, so that the constructor could be defined at the top of the file. */
@@ -88,8 +88,6 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	light_x = 0.7; 
 	light_y = 0.7;
 	light_z = 1.0;
-
-	scale_scene = 1.0f;
 
 	vx = 0; 
 	vx = 0;
@@ -196,9 +194,6 @@ void display()
 
 	glm::mat3 gl_NormalMatrix = glm::mat3(1.0f);
 
-	/* Scale the whole scene. */
-	modelScale.push(glm::scale(modelScale.top(), glm::vec3(scale_scene, scale_scene, scale_scene)));
-
 	/* Individual Objects */
 
 		/* START Windmill */
@@ -248,12 +243,10 @@ void display()
 			glUniform1ui(emitmodeID, emitmode);
 			lightSourceModel->draw();
 
-			modelTranslate.pop();
 			modelScale.pop();
+			modelTranslate.pop();
 			emitmode = 0;
 
-		/* End LIGHT Sphere */
-	modelScale.pop();
 	glDisableVertexAttribArray(0);
 	glUseProgram(0);
 }
@@ -282,8 +275,6 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	if (k == 'L') wingAngle_inc -= 0.05f;
 	if (k == 'Z') zoom -= 0.07f;
 	if (k == 'X') zoom += 0.07f;
-	if (k == 'A') scale_scene += 0.07f;
-	if (k == 'S') scale_scene -= 0.07f;
 
 	if (k == 'F' && action != GLFW_PRESS)
 	{
