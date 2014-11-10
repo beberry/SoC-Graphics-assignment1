@@ -25,7 +25,7 @@ Sphere *lightSourceModel;
 Windmill *windmill;
 
 /* Other configuration */
-GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc, head_angle, zoom, aspect_ratio;
+GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc, head_angle, zoom, aspect_ratio, scale_scene;
 int window_w, window_h;
 
 /* Pre-define functions, so that the constructor could be defined at the top of the file. */
@@ -42,7 +42,8 @@ GraphicsManager::GraphicsManager()
 	window_h = 500;
 
 	wingCount = 5;
-	fogmode   = 0;
+	fogmode	  = 0;
+
 
 	Glfw_wrap *glfw = new Glfw_wrap(window_w, window_h, "Assignment 1, JS");
 
@@ -87,6 +88,8 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	light_x = 0.7; 
 	light_y = 0.7;
 	light_z = 1.0;
+
+	scale_scene = 1.0f;
 
 	vx = 0; 
 	vx = 0;
@@ -193,6 +196,9 @@ void display()
 
 	glm::mat3 gl_NormalMatrix = glm::mat3(1.0f);
 
+	/* Scale the whole scene. */
+	modelScale.push(glm::scale(modelScale.top(), glm::vec3(scale_scene, scale_scene, scale_scene)));
+
 	/* Individual Objects */
 
 		/* START Windmill */
@@ -227,10 +233,10 @@ void display()
 
 
 		/* START LIGHT Sphere */
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(light_x, light_y, light_z));
-			model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+			modelTranslate.push(glm::translate(modelTranslate.top(), glm::vec3(light_x, light_y, light_z)));
+			modelScale.push(glm::scale(modelScale.top(), glm::vec3(0.1f, 0.1f, 0.1f)));
 
+			model = modelTranslate.top() * modelScale.top() * modelRotate.top();
 			gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
 
 			/* Send those uniforms which have changed. */
@@ -241,10 +247,13 @@ void display()
 			emitmode = 1;
 			glUniform1ui(emitmodeID, emitmode);
 			lightSourceModel->draw();
+
+			modelTranslate.pop();
+			modelScale.pop();
 			emitmode = 0;
 
 		/* End LIGHT Sphere */
-
+	modelScale.pop();
 	glDisableVertexAttribArray(0);
 	glUseProgram(0);
 }
@@ -273,6 +282,8 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	if (k == 'L') wingAngle_inc -= 0.05f;
 	if (k == 'Z') zoom -= 0.07f;
 	if (k == 'X') zoom += 0.07f;
+	if (k == 'A') scale_scene += 0.07f;
+	if (k == 'S') scale_scene -= 0.07f;
 
 	if (k == 'F' && action != GLFW_PRESS)
 	{
@@ -347,8 +358,8 @@ void GraphicsManager::cmdManager()
 	std::cout << "J.Stikans, Dundee" << std::endl;
 
 	std::cout << "\n\n-----------------General-----------------------------------" << std::endl;
-	std::cout << "\tZ - zoom in." << std::endl;
-	std::cout << "\tX - zoom out.\n" << std::endl;
+	std::cout << "\tZ - Move the view position in on Z axis." << std::endl;
+	std::cout << "\tX - Move the view position out on Z axis.\n" << std::endl;
 	std::cout << "\tK - Increase counterclockwise roatation speed for the windmill sails." << std::endl;
 	std::cout << "\tL - Increase clockwise roatation speed for the windmill sails.\n" << std::endl;
 	std::cout << "\tO - Rotate the windmill head (roof and sails) counterclockwise." << std::endl;
