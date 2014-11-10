@@ -28,15 +28,14 @@ GLuint vao;
 
 GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc, head_angle;
 
-GLuint colourmode;
 GLuint emitmode;
 GLuint drawmode;
+GLuint fogmode;
 GLuint wingCount;
 
 
 /* Uniforms*/
-GLuint modelID, viewID, projectionID, normalMatrixID, lightPosID, colourmodeID, emitmodeID, textureID, textureModeID, specularModeID;
-GLuint colorModeID;
+GLuint modelID, viewID, projectionID, normalMatrixID, lightPosID, emitmodeID, textureID, textureModeID, specularModeID, fogmodeID;
 
 
 Sphere *lightSourceModel;
@@ -60,6 +59,7 @@ GraphicsManager::GraphicsManager()
 	window_h = 500;
 
 	wingCount = 5;
+	fogmode = 0;
 
 
 	Glfw_wrap *glfw = new Glfw_wrap(window_w, window_h, "Assignement 1 prep, JS");
@@ -99,7 +99,6 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 
 	/* Scene variables.*/
 	zoom	   = 5.0f;
-	colourmode = 0;
 	emitmode   = 0;
 
 	light_x = 0.7; 
@@ -144,11 +143,11 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	viewID		   = glGetUniformLocation(program, "view");
 	projectionID   = glGetUniformLocation(program, "projection");
 	lightPosID	   = glGetUniformLocation(program, "lightPos");
-	colourmodeID   = glGetUniformLocation(program, "colourmode");
 	emitmodeID	   = glGetUniformLocation(program, "emitmode");
 	textureID	   = glGetUniformLocation(program, "tex1");
 	textureModeID  = glGetUniformLocation(program, "textureMode");
 	specularModeID = glGetUniformLocation(program, "specularMode");
+	fogmodeID	   = glGetUniformLocation(program, "fogMode");
 
 	/* Create a windmill object/ */
 	windmill = new Windmill(wingCount, 4.0, 1.0, 0.73, 1.1, modelID, normalMatrixID, textureID, textureModeID, specularModeID);
@@ -232,8 +231,8 @@ void display()
 			glUniformMatrix4fv(viewID, 1, GL_FALSE, &View[0][0]);
 			glUniformMatrix4fv(projectionID, 1, GL_FALSE, &Projection[0][0]);
 			glUniform4fv(lightPosID, 1, glm::value_ptr(lightPos));
-			glUniform1ui(colourmodeID, colourmode);
 			glUniform1ui(emitmodeID, emitmode);
+			glUniform1ui(fogmodeID, fogmode);
 			glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, &gl_NormalMatrix[0][0]);
 
 
@@ -292,6 +291,26 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	/* Valid input START*/
 	if (k == 'K') wingAngle_inc += 0.05f;
 	if (k == 'L') wingAngle_inc -= 0.05f;
+	if (k == 'Z') zoom -= 0.07f;
+	if (k == 'X') zoom += 0.07f;
+
+	if (k == 'F' && action != GLFW_PRESS)
+	{
+		fogmode++;
+
+		if (fogmode > 2)
+		{ 
+			fogmode = 0;
+		}
+
+		switch (fogmode)
+		{
+			case 1: std::cout << "\n\tLinear fog." << std::endl; break;
+			case 2: std::cout << "\n\tFog from the super bible." << std::endl; break;
+
+			default: std::cout << "\n\tFog disabled." << std::endl; break;
+		}
+	}
 
 
 	if (k == 'O' || k == 'P')
@@ -331,13 +350,11 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	if (k == '3') light_y += 0.05f;
 	if (k == '4') light_y -= 0.05f;
 	if (k == '5') light_z -= 0.05f;
-
 	if (k == '6') light_z += 0.05f;
+
 	/* Valid input END */
 
-	
-	if (k == 'Z') zoom -= 0.07f;
-	if (k == 'X') zoom += 0.07f;
+
 
 
 	if (k == '7') vx -= 1.f;
@@ -346,12 +363,6 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	if (k == '0') vy += 1.f;
 	if (k == 'U') vz -= 1.f;
 	if (k == 'I') vz += 1.f;
-
-	if (k == 'M' && action != GLFW_PRESS)
-	{
-		colourmode = !colourmode;
-		std::cout << "colourmode=" << colourmode << std::endl;
-	}
 }
 
 void GraphicsManager::cmdManager()
@@ -374,4 +385,5 @@ void GraphicsManager::cmdManager()
 	std::cout << "\t6 - Move light source closer on Z axis" << std::endl;
 	std::cout << "\n\n-----------------Other------------------------------------" << std::endl;
 	std::cout << "\tN - Toggle between draw modes." << std::endl;
+	std::cout << "\tF - Cycle through fog modes." << std::endl;
 }

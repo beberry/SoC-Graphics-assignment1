@@ -21,7 +21,7 @@ out float u2;
 uniform mat4 model, view, projection;
 uniform mat3 normalmatrix;
 uniform vec4 lightPos;
-uniform uint emitmode, colourmode, textureMode, specularMode;
+uniform uint emitmode, textureMode, specularMode;
 
 
 void main()
@@ -41,10 +41,8 @@ void main()
 	vec3 light_pos3 = lightPos.xyz;			
 
 	// Switch the vertex colour based on the colourmode
-	if (colourmode == 1)
-		diffuse_albedo = colour;
-	else
-		diffuse_albedo = vec4(1.0, 1.0, 1.0, 1.0);
+	
+	diffuse_albedo = vec4(1.0, 1.0, 1.0, 1.0);
 
 	//vec3 ambient = diffuse_albedo.xyz *0.2;
 

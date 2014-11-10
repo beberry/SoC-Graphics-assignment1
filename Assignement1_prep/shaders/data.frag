@@ -16,7 +16,7 @@ vec3 specular_albedo = vec3(1.0, 0.8, 0.6);
 
 out vec4 outputColor;
 
-uniform uint emitmode, textureMode, specularMode;
+uniform uint emitmode, textureMode, specularMode, fogMode;
 uniform sampler2D tex1;
 
 in float u1;
@@ -102,7 +102,17 @@ void main()
 		vec4 texcolour = texture(tex1, kk3);
 		outputColor = vec4(fattenuation*(texcolour.xyz*(ambient + diffuse+specular))+global_ambient+emissive, 1.0);
 	}
-	outputColor = fog_linear(outputColor);
-	//outputColor = fog(outputColor);
+
+	if(fogMode == 1)
+	{
+		// Linear fog
+		outputColor = fog_linear(outputColor);
+	}
+	else if(fogMode == 2)
+	{
+		// Fog from the super bible
+		outputColor = fog(outputColor);
+	}
+
 	//outputColor = vec4(1.0,0.0,0.0,1.0);
 }
