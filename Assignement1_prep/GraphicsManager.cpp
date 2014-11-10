@@ -8,42 +8,24 @@
 
 #include "GraphicsManager.h"
 
-
-/* OpenGL libs */
-#include <glload/gl_load.h>
-
-/* GLM core */
-#include <glm/glm.hpp>
-#include "glm/gtc/matrix_transform.hpp"
-#include <glm/gtc/type_ptr.hpp>
-
-/* Other */
-#include <iostream>
-#include "glfw_wrap.h"
-#include "shaderManager.h"
-
-GLuint positionBufferObject, positionBufferObjectPyramid, colourObject;
 GLuint program;
 GLuint vao;
 
-GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc, head_angle;
-
+/* Configuration properties */
 GLuint emitmode;
 GLuint drawmode;
 GLuint fogmode;
 GLuint wingCount;
 
-
-/* Uniforms*/
+/* Uniforms */
 GLuint modelID, viewID, projectionID, normalMatrixID, lightPosID, emitmodeID, textureID, textureModeID, specularModeID, fogmodeID;
 
-
+/* Graphics models */
 Sphere *lightSourceModel;
 Windmill *windmill;
 
-GLfloat aspect_ratio;
-
-GLfloat zoom;
+/* Other configuration */
+GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc, head_angle, zoom, aspect_ratio;
 int window_w, window_h;
 
 /* Pre-define functions, so that the constructor could be defined at the top of the file. */
@@ -55,14 +37,14 @@ static void errorCallback(int error, const char* description);
 /* Constructor for this object. */
 GraphicsManager::GraphicsManager()
 {
+	/* Initial configuration. */
 	window_w = 1024;
 	window_h = 500;
 
 	wingCount = 5;
-	fogmode = 0;
+	fogmode   = 0;
 
-
-	Glfw_wrap *glfw = new Glfw_wrap(window_w, window_h, "Assignement 1 prep, JS");
+	Glfw_wrap *glfw = new Glfw_wrap(window_w, window_h, "Assignment 1, JS");
 
 	if (!ogl_LoadFunctions())
 	{
@@ -72,14 +54,15 @@ GraphicsManager::GraphicsManager()
 	{
 		cmdManager();
 
-		/* Note it you might want to move this call to the wrapper class */
-		glfw->setErrorCallback(errorCallback);
-		glfw->setRenderer(display);
 		glfw->setKeyCallback(keyCallback);
 		glfw->setReshapeCallback(resizeWindow);
+		glfw->setErrorCallback(errorCallback);
+		glfw->setRenderer(display);
 
+		/* Initialize glfw wrapper. s*/
 		this->init(glfw);
 
+		/* Start our event loop. */
 		glfw->eventLoop();
 
 		delete(glfw);
@@ -109,9 +92,9 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	vx = 0;
 	vz = 0.f;
 
-	wingAngle = 0.0f;
+	wingAngle     = 0.0f;
 	wingAngle_inc = 0.1f;
-	head_angle = 0.0f;
+	head_angle	  = 0.0f;
 
 	// Generate index (name) for one vertex array object
 	glGenVertexArrays(1, &vao);
@@ -165,24 +148,25 @@ void display()
 		wingAngle = std::fmod(wingAngle, 360.0f);
 	}
 
-	/* Anti aliasing */
+	/* Anti aliasing. */
 	glEnable(GL_MULTISAMPLE);
 
-	/* Define the background colour */
+	/* Background colour for the scene. */
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-	/* Clear the colour and frame buffers */
+	/* Clear the colour and frame buffers. */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	/* Enable depth test  */
+	/* Enable depth test. */
 	glEnable(GL_DEPTH_TEST);
 
-	/* Make the compiled shader program current */
+	/* Use the our loaded shader program. */
 	glUseProgram(program);
 
-	// Projection matrix.
+	/* Projection matrix. */
 	glm::mat4 Projection = glm::perspective(30.0f, aspect_ratio, 0.1f, 100.0f);
 
+	/* Define view. */
 	glm::mat4 View = glm::lookAt(
 		glm::vec3(0, 0, zoom),
 		glm::vec3(0, 0, 0),
@@ -190,7 +174,6 @@ void display()
 		);
 
 	// Apply rotations to the view position
-	//View = glm::scale(View, glm::vec3(zoom, zoom, zoom));
 	View = glm::rotate(View, -vx, glm::vec3(1, 0, 0));
 	View = glm::rotate(View, -vy, glm::vec3(0, 1, 0));
 	View = glm::rotate(View, -vz, glm::vec3(0, 0, 1));
@@ -247,9 +230,6 @@ void display()
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(light_x, light_y, light_z));
 			model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
-			model = glm::rotate(model, -lightSourceModel->angle_x, glm::vec3(1, 0, 0));
-			model = glm::rotate(model, -lightSourceModel->angle_y, glm::vec3(0, 1, 0));
-			model = glm::rotate(model, -lightSourceModel->angle_z, glm::vec3(0, 0, 1));
 
 			gl_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(View*model)));
 
@@ -352,17 +332,14 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 	if (k == '5') light_z -= 0.05f;
 	if (k == '6') light_z += 0.05f;
 
-	/* Valid input END */
-
-
-
-
 	if (k == '7') vx -= 1.f;
 	if (k == '8') vx += 1.f;
 	if (k == '9') vy -= 1.f;
 	if (k == '0') vy += 1.f;
 	if (k == 'U') vz -= 1.f;
 	if (k == 'I') vz += 1.f;
+
+	/* Valid input END */
 }
 
 void GraphicsManager::cmdManager()
@@ -383,6 +360,10 @@ void GraphicsManager::cmdManager()
 	std::cout << "\t4 - Move light source downd on Y axis." << std::endl;
 	std::cout << "\t5 - Move light source further away on Z axis." << std::endl;
 	std::cout << "\t6 - Move light source closer on Z axis" << std::endl;
+	std::cout << "\n\n-----------------Whole scene------------------------------" << std::endl;
+	std::cout << "\t7, 8 - Rotate the scene around X axis." << std::endl;
+	std::cout << "\t9, 0 - Rotate the scene around Y axis." << std::endl;
+	std::cout << "\tU, I - Rotate the scene around Z axis." << std::endl;
 	std::cout << "\n\n-----------------Other------------------------------------" << std::endl;
 	std::cout << "\tN - Toggle between draw modes." << std::endl;
 	std::cout << "\tF - Cycle through fog modes." << std::endl;

@@ -12,19 +12,25 @@
 #include <glload/gl_load.h>
 #include <GLFW/glfw3.h>
 
-// OpenGL objects.
+/* GLM core */
+#include <glm/glm.hpp>
+#include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtc/type_ptr.hpp>
+
+/* OpenGL objects. */
 #include "Sphere.h"
 #include "Windmill.h"
 
-// Other
+/* Other */
 #include <stack>
+#include <iostream>
 #include "glfw_wrap.h"
+#include "shaderManager.h"
 
 class GraphicsManager
 {
 private:
 	void GraphicsManager::init(Glfw_wrap *glw);
-	void GraphicsManager::setWingCount();
 	void GraphicsManager::cmdManager();
 
 public:
