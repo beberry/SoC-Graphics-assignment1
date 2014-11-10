@@ -1,5 +1,5 @@
 // Specify minimum OpenGL version
-#version 420
+#version 400
 
 // Define the vertex attributes
 layout(location = 0) in vec3 position;
@@ -11,7 +11,7 @@ layout(location = 3) in vec3 textcoord;
 out VS_OUT
 {
 	vec3 N, L;
-	vec4 colour, diffusecolour, ambientcolour, P;
+	vec4 colour, diffusecolour, ambientcolour, P, world_coord;
 	float attenuation;
 } vs_out;
 
@@ -21,6 +21,7 @@ out vec2 ftexcoord;
 
 out float u1;
 out float u2;
+
 
 // Uniforms
 uniform mat4 model, view, projection;
@@ -76,8 +77,7 @@ void main()
 	// Set Out variables
 	vs_out.colour = diffuse_albedo;
 	vs_out.attenuation = attenuation;
-	
+	vs_out.world_coord = model*position_h;
+
 	gl_Position = (projection * view * model) * position_h;
 }
-
-

@@ -1,17 +1,15 @@
 // Minimal fragment shader
 
-#version 410
-layout(location = 0) in vec3 position;
+#version 400
 
 in VS_OUT
 {
 	vec3 N, L;
-	vec4 colour, diffusecolour, ambientcolour, P;
+	vec4 colour, diffusecolour, ambientcolour, P, world_coord;
 	float attenuation;
 } vs_out;
 
 in vec2 ftexcoord;
-
 
 vec3 global_ambient = vec3(0.07, 0.07, 0.07);
 vec3 specular_albedo = vec3(1.0, 0.8, 0.6);
@@ -30,8 +28,8 @@ vec4 fog(vec4 c)
 	vec4 fog_colour = vec4(0.1, 0.1, 0.1, 1.0);
 	float z = length(vs_out.P.xyz);
 
-	float de = 0.025 * smoothstep(0.0, 6.0, 10.0 - position.y);
-	float di = 0.045 * smoothstep(0.0, 40.0, 20.0  - position.y);
+	float de = 0.025 * smoothstep(0.0, 6.0, 10.0 - vs_out.world_coord.y);
+	float di = 0.045 * smoothstep(0.0, 40.0, 20.0  - vs_out.world_coord.y);
 
 	float extinction = exp(-z * de);
 	float inscattering = exp(-z * di);
