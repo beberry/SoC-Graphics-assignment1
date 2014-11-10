@@ -8,9 +8,14 @@ layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 textcoord;
 
 // My out definitions
-out vec3 fnormal, flightdir;
-out vec4 fcolour, fdiffusecolour, fambientcolour, fposition;
-out float fattenuation;
+out VS_OUT
+{
+	vec3 N, L;
+	vec4 colour, diffusecolour, ambientcolour, P;
+	float attenuation;
+} vs_out;
+
+
 out vec2 ftexcoord;
 
 
@@ -58,9 +63,9 @@ void main()
 
 
 	// Pass to fragment shader.
-	fnormal   = N;
-	fposition = P;
-	flightdir = L;
+	vs_out.N = N;
+	vs_out.P = P;
+	vs_out.L = L;
 
 
 
@@ -69,8 +74,8 @@ void main()
     float attenuation = 1.0 / (1.0 + attenuation_k * pow(distanceToLight, 2));
 
 	// Set Out variables
-	fcolour = diffuse_albedo;
-	fattenuation = attenuation;
+	vs_out.colour = diffuse_albedo;
+	vs_out.attenuation = attenuation;
 	
 	gl_Position = (projection * view * model) * position_h;
 }

@@ -246,7 +246,7 @@ void display()
 		/* START LIGHT Sphere */
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(light_x, light_y, light_z));
-			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+			model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 			model = glm::rotate(model, -lightSourceModel->angle_x, glm::vec3(1, 0, 0));
 			model = glm::rotate(model, -lightSourceModel->angle_y, glm::vec3(0, 1, 0));
 			model = glm::rotate(model, -lightSourceModel->angle_z, glm::vec3(0, 0, 1));

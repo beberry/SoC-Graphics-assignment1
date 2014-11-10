@@ -3,11 +3,13 @@
 #version 410
 layout(location = 0) in vec3 position;
 
-in vec4 fcolour;
+in VS_OUT
+{
+	vec3 N, L;
+	vec4 colour, diffusecolour, ambientcolour, P;
+	float attenuation;
+} vs_out;
 
-in vec3 fnormal, flightdir;
-in vec4 fdiffusecolour, fambientcolour, fposition;
-in float fattenuation;
 in vec2 ftexcoord;
 
 
@@ -26,7 +28,7 @@ vec4 fog(vec4 c)
 {
 	//http://www.ozone3d.net/tutorials/glsl_fog/p03.php
 	vec4 fog_colour = vec4(0.1, 0.1, 0.1, 1.0);
-	float z = length(fposition.xyz);
+	float z = length(vs_out.P.xyz);
 
 	float de = 0.025 * smoothstep(0.0, 6.0, 10.0 - position.y);
 	float di = 0.045 * smoothstep(0.0, 40.0, 20.0  - position.y);
@@ -43,7 +45,7 @@ vec4 fog_linear(vec4 c)
 	float fog_minD = -2.0;
 	vec4 fog_colour = vec4(0.1, 0.1, 0.1, 1.0);
 
-	float dist = length(fposition.xyz);
+	float dist = length(vs_out.P.xyz);
 	float fog_factor = (fog_maxD - dist) / (fog_maxD - fog_minD);
 	fog_factor = clamp(fog_factor, 0.0, 1.0);
 
@@ -55,14 +57,14 @@ void main()
 	vec3 emissive = vec3(0);
 
 	// Ambient lighting calculation;
-	vec3 ambient = fcolour.xyz *0.3;
+	vec3 ambient = vs_out.colour.xyz *0.3;
 
 	// Diffuse lighting calculation
-	vec3 diffuse = max(dot(fnormal, flightdir), 0.0) * fcolour.xyz;
+	vec3 diffuse = max(dot(vs_out.N, vs_out.L), 0.0) * vs_out.colour.xyz;
 
 	// Specular lighting caluclation
-	vec3 V = normalize(-fposition.xyz);	
-	vec3 R = reflect(-flightdir, fnormal);
+	vec3 V = normalize(-vs_out.P.xyz);	
+	vec3 R = reflect(-vs_out.L, vs_out.N);
 	vec3 specular = vec3(0.0, 0.0, 0.0);
 	
 	if(specularMode == 1)
@@ -73,8 +75,8 @@ void main()
 	if (emitmode == 1) emissive = vec3(1.0, 1.0, 0.8);
 
 	
-	//outputColor = vec4(fattenuation*(ambient+diffuse+specular)+global_ambient+emissive, 1.0);
-	outputColor = vec4(fattenuation*(ambient+diffuse+specular)+global_ambient+emissive, 1.0);
+	//outputColor = vec4(vs_out.attenuation*(ambient+diffuse+specular)+global_ambient+emissive, 1.0);
+	outputColor = vec4(vs_out.attenuation*(ambient+diffuse+specular)+global_ambient+emissive, 1.0);
 
 	if(textureMode == 1)
 	{
@@ -100,7 +102,7 @@ void main()
 		}
 
 		vec4 texcolour = texture(tex1, kk3);
-		outputColor = vec4(fattenuation*(texcolour.xyz*(ambient + diffuse+specular))+global_ambient+emissive, 1.0);
+		outputColor = vec4(vs_out.attenuation*(texcolour.xyz*(ambient + diffuse+specular))+global_ambient+emissive, 1.0);
 	}
 
 	if(fogMode == 1)
