@@ -24,12 +24,11 @@ class GraphicsManager
 {
 private:
 	void GraphicsManager::init(Glfw_wrap *glw);
+	void GraphicsManager::setWingCount();
 	void GraphicsManager::cmdManager();
-
 
 public:
 	GraphicsManager();
 	~GraphicsManager();
-
 };
 

@@ -31,6 +31,7 @@ GLfloat light_x, light_y, light_z, vx, vy, vz, wingAngle, wingAngle_inc, head_an
 GLuint colourmode;
 GLuint emitmode;
 GLuint drawmode;
+GLuint wingCount;
 
 
 /* Uniforms*/
@@ -58,6 +59,8 @@ GraphicsManager::GraphicsManager()
 	window_w = 1024;
 	window_h = 500;
 
+	wingCount = 5;
+
 	Glfw_wrap *glfw = new Glfw_wrap(window_w, window_h, "Assignement 1 prep, JS");
 
 	if (!ogl_LoadFunctions())
@@ -66,8 +69,6 @@ GraphicsManager::GraphicsManager()
 	}
 	else
 	{
-		this->cmdManager();
-
 		/* Note it you might want to move this call to the wrapper class */
 		glfw->setErrorCallback(errorCallback);
 		glfw->setRenderer(display);
@@ -147,7 +148,7 @@ void GraphicsManager::init(Glfw_wrap *glfw)
 	specularModeID = glGetUniformLocation(program, "specularMode");
 
 	/* Create a windmill object/ */
-	windmill = new Windmill(5, 4.0, 1.0, 0.73, 1.1, modelID, normalMatrixID, textureID, textureModeID, specularModeID);
+	windmill = new Windmill(wingCount, 4.0, 1.0, 0.73, 1.1, modelID, normalMatrixID, textureID, textureModeID, specularModeID);
 }
 
 /* The display callback method which redraws the scene. */
@@ -352,6 +353,8 @@ static void keyCallback(GLFWwindow* window, int k, int s, int action, int mods)
 
 void GraphicsManager::cmdManager()
 {
+	std::cout << "J.Stikans, Dundee" << std::endl;
+
 	std::cout << "\n\n-----------------General-----------------------------------" << std::endl;
 	std::cout << "\tZ - zoom in." << std::endl;
 	std::cout << "\tX - zoom out.\n" << std::endl;
@@ -368,5 +371,4 @@ void GraphicsManager::cmdManager()
 	std::cout << "\t6 - Move light source closer on Z axis" << std::endl;
 	std::cout << "\n\n-----------------Other------------------------------------" << std::endl;
 	std::cout << "\tN - Toggle between draw modes." << std::endl;
-	std::cout << std::endl;
 }
