@@ -22,10 +22,11 @@ uniform sampler2D tex1;
 in float u1;
 in float u2;
 
+vec4 fog_colour = vec4(0.1, 0.1, 0.1, 1.0);
+
 vec4 fog(vec4 c)
 {
-	//http://www.ozone3d.net/tutorials/glsl_fog/p03.php
-	vec4 fog_colour = vec4(0.1, 0.1, 0.1, 1.0);
+	// Taken from "OpenGL SuperBible Sixth Edition", page 543
 	float z = length(vs_out.P.xyz);
 
 	float de = 0.025 * smoothstep(0.0, 6.0, 10.0 - vs_out.world_coord.y);
@@ -39,9 +40,9 @@ vec4 fog(vec4 c)
 
 vec4 fog_linear(vec4 c)
 {
+	// This example is taken from one of our lecture slides by Ian Martin.
 	float fog_maxD = 17.0;
 	float fog_minD = -2.0;
-	vec4 fog_colour = vec4(0.1, 0.1, 0.1, 1.0);
 
 	float dist = length(vs_out.P.xyz);
 	float fog_factor = (fog_maxD - dist) / (fog_maxD - fog_minD);
