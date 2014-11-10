@@ -1,14 +1,11 @@
 /**
-A primitive graphics object - cylinder.
-The variables can be modified, so that the object becomes more complex - cone, cylinder which changes it's width.
+	A primitive graphics object - cylinder.
+	The variables can be modified, so that the object becomes more complex - cone, cylinder which changes it's width.
 
-@author Jekabs Stikans
-@version 1.0, 01/11/2014
+	@author Jekabs Stikans
+	@version 1.0, 01/11/2014
 */
 #include "Cylinder.h"
-
-/* Inlcude some standard headers */
-#include <iostream>
 
 /* Construction */
 Cylinder::Cylinder(GLfloat height, GLfloat maxTopRadius, GLfloat radiussCoeff, GLuint textureID)
@@ -18,8 +15,7 @@ Cylinder::Cylinder(GLfloat height, GLfloat maxTopRadius, GLfloat radiussCoeff, G
 	this->maxTopRadius	 = maxTopRadius;
 	this->drawmode	     = 3;
 	this->vertexCount    = 0;
-
-	this->textureID = textureID;
+	this->textureID		 = textureID;
 }
 
 /* Destructor */
@@ -39,21 +35,16 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	this->vertexCount = (numlats) * (numlongs);
 
 	this->vertexPositions.resize(this->vertexCount * 3);
-	this->vertexColours   = new GLfloat[this->vertexCount * 4];
 
 	makeUnitObject(numlats, numlongs);
 
-
 	this->vertexNormals.resize(this->vertexCount);
-
-
 
 	// init arr
 	for (int i = 0; i < this->vertexCount; i++)
 	{
 		this->vertexNormals[i] = glm::vec3(0.0, 0.0, 0.0);
 	}
-
 
 	// -1 to ignore the last point in the strip. We have to ignore first and last point in the strip.
 	
@@ -180,16 +171,6 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 		this->vertexNormals[i] = glm::normalize(this->vertexNormals[i]);
 	}
 
-
-	/* Define colours as the x,y,z components of the sphere vertices */
-	for (i = 0; i < this->vertexCount; i++)
-	{
-		this->vertexColours[i * 4]     = this->vertexPositions[i * 3];
-		this->vertexColours[i * 4 + 1] = this->vertexPositions[i * 3 + 1];
-		this->vertexColours[i * 4 + 2] = this->vertexPositions[i * 3 + 2];
-		this->vertexColours[i * 4 + 3] = 1.f;
-	}
-
 	/* Generate the vertex buffer object */
 	glGenBuffers(1, &this->bufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, this->bufferObject);
@@ -203,7 +184,6 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	
-
 	/* Generate texture coordinats */
 	std::vector<GLfloat> texcoords1;
 
@@ -225,13 +205,6 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	glBufferData(GL_ARRAY_BUFFER, texcoords1.size()*sizeof(GLfloat), texcoords1.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-
-	/* Store the colours in a buffer object */
-	//glGenBuffers(1, &this->normals);
-	//glBindBuffer(GL_ARRAY_BUFFER, sphereColours);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)* numvertices * 4, pColours, GL_STATIC_DRAW);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	/* Calculate the number of indices in our index array and allocate memory for it */
 	GLuint numindices = (numlongs*2+2) * (numlats-1);
 
@@ -250,7 +223,6 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 			pindices[index++] = start + i + numlongs;
 		}
 
-		
 		pindices[index++] = start; // close the triangle strip loop by going back to the first vertex in the loop
 		pindices[index++] = start + numlongs; // close the triangle strip loop by going back to the first vertex in the loop
 
@@ -264,7 +236,6 @@ GLuint Cylinder::makeVBO(GLfloat numlats, GLfloat numlongs)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numindices * sizeof(GLuint), pindices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
-
 	delete pindices;
 	return this->vertexCount;
 }
@@ -311,6 +282,7 @@ void Cylinder::makeUnitObject(GLuint numlats, GLuint numlongs)
 	}
 }
 
+/* Draw the cylinder. */
 void Cylinder::draw()
 {
 	GLuint i;
@@ -329,11 +301,6 @@ void Cylinder::draw()
 	glEnableVertexAttribArray(3);
 	glBindBuffer(GL_ARRAY_BUFFER, this->textureBuffer);
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	/* Bind the sphere colours */
-	//glBindBuffer(GL_ARRAY_BUFFER, sphereColours);
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glPointSize(3.f);
 
@@ -358,9 +325,6 @@ void Cylinder::draw()
 		/* Draw the latitude triangle strips */
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
 
-		/* Close the bottom of the cylinder with a trianglefan  */
-		//glDrawElements(GL_TRIANGLE_FAN, numlongs + 2, GL_UNSIGNED_INT, (GLvoid*)(0));
-
 		GLuint lat_offset = 4 * (this->numlongs * 2 + 2);
 
 		for (i = 0; i < numlats; i++)
@@ -376,14 +340,13 @@ std::vector<GLfloat>* Cylinder::getVertexPositions()
 	return &this->vertexPositions;
 }
 
-
 /* Set the draw mode for this object. */
 void Cylinder::setDrawmode(int drawmode)
 {
 	this->drawmode = drawmode;
 }
 
-/* Set the texture for this object. */
+/* Set the texture for this object. Originally written by Ian Martin, modified by Jekabs Stikans. */
 void Cylinder::setTexture(std::string textureName)
 {
 	try
@@ -415,8 +378,4 @@ void Cylinder::setTexture(std::string textureName)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-
-	// Can't get this to work
-	glGenerateMipmap(GL_TEXTURE_2D);
 }

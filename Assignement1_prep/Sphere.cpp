@@ -37,17 +37,8 @@ GLuint Sphere::makeVBO(GLfloat numlats, GLfloat numlongs)
 	/* Calculate the number of vertices required in sphere */
 	this->vertexCount = 2 + ((numlats - 1) * numlongs);
 	this->vertexPositions = new GLfloat[this->vertexCount * 3];
-	this->vertexColours = new GLfloat[this->vertexCount * 4];
-	makeUnitObject(numlats, numlongs);
 
-	/* Define colours as the x,y,z components of the sphere vertices */
-	for (i = 0; i < this->vertexCount; i++)
-	{
-		this->vertexColours[i * 4] = this->vertexPositions[i * 3];
-		this->vertexColours[i * 4 + 1] = this->vertexPositions[i * 3 + 1];
-		this->vertexColours[i * 4 + 2] = this->vertexPositions[i * 3 + 2];
-		this->vertexColours[i * 4 + 3] = 1.f;
-	}
+	makeUnitObject(numlats, numlongs);
 
 	/* Generate the vertex buffer object */
 	glGenBuffers(1, &this->bufferObject);
@@ -91,11 +82,6 @@ GLuint Sphere::makeVBO(GLfloat numlats, GLfloat numlongs)
 	glBindBuffer(GL_ARRAY_BUFFER, this->textureBuffer);
 	glBufferData(GL_ARRAY_BUFFER, texcoords1.size()*sizeof(GLfloat), texcoords1.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	/* Store the colours in a buffer object */
-	/*glGenBuffers(1, &sphereColours);
-	glBindBuffer(GL_ARRAY_BUFFER, sphereColours);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)* numvertices * 4, pColours, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
 	/* Calculate the number of indices in our index array and allocate memory for it */
 	GLuint numindices = ((numlongs * 2) + 2) * (numlats - 1) + ((numlongs + 2) * 2);
@@ -217,12 +203,6 @@ void Sphere::draw()
 	glEnableVertexAttribArray(3);
 	glBindBuffer(GL_ARRAY_BUFFER, this->textureBuffer);
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-
-	/* Bind the sphere colours */
-	/*glBindBuffer(GL_ARRAY_BUFFER, sphereColours);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);*/
 
 	glPointSize(3.f);
 

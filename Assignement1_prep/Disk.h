@@ -27,7 +27,6 @@ private:
 	/* Common for graphics objects. */
 	std::vector<GLfloat> vertexPositions;
 	std::vector<glm::vec3> vertexNormals;
-	std::vector<GLfloat> vertexColours;
 
 	GLuint bufferObject, normalsBufferObject, elementBuffer, textureBuffer, textureID, texID;
 
@@ -44,7 +43,6 @@ public:
 	~Disk();
 
 	std::vector<GLfloat>* Disk::getVertexPositions();
-	GLfloat* Disk::getVerteColours();
 
 	GLuint Disk::makeVBO();
 	void Disk::makeUnitObject();

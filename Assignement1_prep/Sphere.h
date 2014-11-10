@@ -31,7 +31,6 @@ private:
 	/* Common for graphics objects. */
 	GLfloat *vertexPositions;
 	glm::vec3 *vertexNormals;
-	GLfloat *vertexColours;
 
 	GLuint bufferObject, normalsBufferObject, elementBuffer, textureBuffer, textureID, texID;
 
@@ -53,7 +52,6 @@ public:
 	~Sphere();
 
 	GLfloat* Sphere::getVertexPositions();
-	GLfloat* Sphere::getVerteColours();
 
 	GLuint makeVBO(GLfloat numlats, GLfloat numlongs);
 	void makeUnitObject(GLuint numlats, GLuint numlongs);

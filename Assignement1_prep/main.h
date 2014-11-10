@@ -9,7 +9,6 @@ class main
 {
 private:
 
-
 public:
 	main();
 	~main();

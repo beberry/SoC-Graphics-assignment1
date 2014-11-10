@@ -26,11 +26,6 @@ std::vector<GLfloat>* Disk::getVertexPositions()
 	return &this->vertexPositions;
 }
 
-/*GLfloat* Disk::getVerteColours()
-{
-	return this->vertexColours;
-}*/
-
 /* A method which allows changing the vetex positions of this object. */
 void Disk::setVertexPositions(std::vector<GLfloat> vertexPositions, GLint normalYDirection)
 {
@@ -113,11 +108,6 @@ void Disk::draw()
 	glEnableVertexAttribArray(3);
 	glBindBuffer(GL_ARRAY_BUFFER, this->textureBuffer);
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	/* Bind the sphere colours */
-	//glBindBuffer(GL_ARRAY_BUFFER, sphereColours);
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glPointSize(3.f);
 

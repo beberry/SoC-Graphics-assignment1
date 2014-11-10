@@ -1,10 +1,10 @@
 /**
-A primitive graphics object - cube.
-Some code taken from lab4 example. The code was extracted into its own
-class and new functionality was added.
+	A primitive graphics object - cube.
+	Some code taken from lab4 example. The code was extracted into its own
+	class and new functionality was added.
 
-@author Ian Martin, Modified by Jekabs Stikanss
-@version 1.0, 03/11/2014
+	@author Ian Martin, Modified by Jekabs Stikanss
+	@version 1.0, 03/11/2014
 */
 
 #include "Cube.h"
@@ -65,56 +65,6 @@ Cube::Cube()
 		-0.25f, 0.25f, -0.25f
 	};
 
-	GLfloat vertexColours[] = {
-		-0.25f, 0.25f, -0.25f,
-		-0.25f, -0.25f, -0.25f,
-		0.25f, -0.25f, -0.25f,
-
-		0.25f, -0.25f, -0.25f,
-		0.25f, 0.25f, -0.25f,
-		-0.25f, 0.25f, -0.25f,
-
-		0.25f, -0.25f, -0.25f,
-		0.25f, -0.25f, 0.25f,
-		0.25f, 0.25f, -0.25f,
-
-		0.25f, -0.25f, 0.25f,
-		0.25f, 0.25f, 0.25f,
-		0.25f, 0.25f, -0.25f,
-
-		0.25f, -0.25f, 0.25f,
-		-0.25f, -0.25f, 0.25f,
-		0.25f, 0.25f, 0.25f,
-
-		-0.25f, -0.25f, 0.25f,
-		-0.25f, 0.25f, 0.25f,
-		0.25f, 0.25f, 0.25f,
-
-		-0.25f, -0.25f, 0.25f,
-		-0.25f, -0.25f, -0.25f,
-		-0.25f, 0.25f, 0.25f,
-
-		-0.25f, -0.25f, -0.25f,
-		-0.25f, 0.25f, -0.25f,
-		-0.25f, 0.25f, 0.25f,
-
-		-0.25f, -0.25f, 0.25f,
-		0.25f, -0.25f, 0.25f,
-		0.25f, -0.25f, -0.25f,
-
-		0.25f, -0.25f, -0.25f,
-		-0.25f, -0.25f, -0.25f,
-		-0.25f, -0.25f, 0.25f,
-
-		-0.25f, 0.25f, -0.25f,
-		0.25f, 0.25f, -0.25f,
-		0.25f, 0.25f, 0.25f,
-
-		0.25f, 0.25f, 0.25f,
-		-0.25f, 0.25f, 0.25f,
-		-0.25f, 0.25f, -0.25f,
-	};
-
 	this->vertexNormals = 
 	{
 		0, 0, -1.f, 0, 0, -1.f, 0, 0, -1.f,
@@ -130,8 +80,6 @@ Cube::Cube()
 		0, 1.f, 0, 0, 1.f, 0, 0, 1.f, 0,
 		0, 1.f, 0, 0, 1.f, 0, 0, 1.f, 0,
 	};
-
-	this->vertexColours   = vertexColours;
 }
 
 
@@ -148,11 +96,6 @@ GLuint Cube::makeVBO()
 std::vector<GLfloat>* Cube::getVertexPositions()
 {
 	return &this->vertexPositions;
-}
-
-GLfloat* Cube::getVerteColours()
-{
-	return this->vertexColours;
 }
 
 /* A method which allows changing the vetex positions of this object. */

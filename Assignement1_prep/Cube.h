@@ -27,7 +27,6 @@ private:
 	/* Common for graphics objects. */
 	std::vector<GLfloat> vertexPositions;
 	std::vector<GLfloat> vertexNormals;
-	GLfloat *vertexColours;
 
 	GLuint bufferObject, normalsBufferObject, elementBuffer;
 
@@ -49,7 +48,6 @@ public:
 	~Cube();
 
 	std::vector<GLfloat>* Cube::getVertexPositions();
-	GLfloat* Cube::getVerteColours();
 
 	GLuint Cube::makeVBO();
 	void Cube::makeUnitObject(GLuint numlats, GLuint numlongs);

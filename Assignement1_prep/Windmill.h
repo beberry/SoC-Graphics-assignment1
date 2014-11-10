@@ -54,7 +54,6 @@ private:
 	Sphere *topModel;
 	std::vector <WindmillWing*> wings;
 
-
 public:
 	Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloat baseRatio, GLfloat baseRadiussCoeff, GLuint modelID, GLuint normalMatrixID, GLuint textureID, GLuint textureModeID, GLuint specularModeID);
 	~Windmill();

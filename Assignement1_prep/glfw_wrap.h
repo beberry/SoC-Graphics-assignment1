@@ -1,7 +1,12 @@
 #pragma once
 
-/* Inlcude GLFW */
+/* Inlcude GL_Load and GLFW */
+#include <glload/gl_load.h>
 #include <GLFW/glfw3.h>
+#include "glfw_wrap.h"
+
+/* Inlcude some standard headers */
+#include <iostream>
 
 class Glfw_wrap
 {

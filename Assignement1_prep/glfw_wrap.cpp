@@ -6,16 +6,7 @@ and to include shader loader functions to include shaders as text files
 Iain Martin August 2014
 */
 
-
-
-/* Inlcude GL_Load and GLFW */
-#include <glload/gl_load.h>
 #include "glfw_wrap.h"
-
-/* Inlcude some standard headers */
-#include <iostream>
-
-
 
 /*
 	Constructor for wrapper object 
@@ -23,11 +14,11 @@ Iain Martin August 2014
 */
 Glfw_wrap::Glfw_wrap(int width, int height, char *title) {
 
-	this->windowWidth = width;
+	this->windowWidth  = width;
 	this->windowHeight = height;
-	this->title = title;
-	this->fps = 60;
-	this->running = true;
+	this->title		   = title;
+	this->fps		   = 60;
+	this->running	   = true;
 
 	/* Initialise GLFW and exit if it fails */
 	if (!glfwInit())

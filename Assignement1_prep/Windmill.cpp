@@ -36,8 +36,6 @@ Windmill::Windmill(GLuint wingCount, GLfloat height, GLfloat topMaxWidth, GLfloa
 	this->createWingHolder();
 	this->createWingHolderCap();
 	this->createWings();
-
-	this->wings;
 }
 
 Windmill::~Windmill()
@@ -244,10 +242,10 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 	GLfloat DEG_TO_RADIANS = 3.141592f / 180.f;
 
-
 	/* Apply all transformations to each wing of the windmill. */
 	for (int i = 0; i < this->wings.size(); i++)
 	{
+		/* This could have been done in a simpler way by just doing transformations in a different order. */
 		float currentAngle = (float)i*wingAngle+this->wingAngle;
 
 		if (currentAngle < 0)
@@ -257,7 +255,7 @@ void Windmill::draw(glm::mat4 &View, std::stack<glm::mat4> &modelTranslate, std:
 
 		/* Calculate the translation values */
 		GLfloat activeAngle = std::fmod(std::abs(currentAngle), 360.0);
-		GLfloat localAngle = std::fmod(activeAngle, 90.0);
+		GLfloat localAngle  = std::fmod(activeAngle, 90.0);
 
 		GLfloat localAngle2 = 0.0f;
 

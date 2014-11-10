@@ -13,11 +13,9 @@ ShaderManager::ShaderManager()
 {
 }
 
-
 ShaderManager::~ShaderManager()
 {
 }
-
 
 /*
 	Build shaders from strings containing shader source code

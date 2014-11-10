@@ -41,13 +41,11 @@ public:
 	~WindmillWing();
 
 	GLfloat* WindmillWing::getVertexPositions();
-	GLfloat* WindmillWing::getVerteColours();
 
 	GLuint WindmillWing::makeVBO();
 	void WindmillWing::makeUnitObject();
 	void WindmillWing::draw();
 	void WindmillWing::setDrawmode(int drawmode);
-
 
 	GLfloat angle_x, angle_y, angle_z, angle_inc_x, angle_inc_y, angle_inc_z;
 

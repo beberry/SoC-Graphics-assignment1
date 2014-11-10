@@ -17,6 +17,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 /* Some STL includes. */
+#include <iostream>
 #include <vector>
 
 #include "TextureManager.h"
@@ -28,7 +29,6 @@ private:
 	/* Common for graphics objects. */
 	std::vector<GLfloat> vertexPositions;
 	std::vector<glm::vec3> vertexNormals;
-	GLfloat *vertexColours;
 
 	GLuint bufferObject, normalsBufferObject, elementBuffer, textureBuffer, textureID, texID;
 
@@ -50,13 +50,11 @@ public:
 	~Cylinder();
 
 	std::vector<GLfloat>* Cylinder::getVertexPositions();
-	GLfloat* Cylinder::getVerteColours();
 
 	GLuint makeVBO(GLfloat numlats, GLfloat numlongs);
 	void makeUnitObject(GLuint numlats, GLuint numlongs);
 	void draw();
 	void setDrawmode(int drawmode);
-
 
 	GLfloat angle_x, angle_y, angle_z, angle_inc_x, angle_inc_y, angle_inc_z;
 
